@@ -1,0 +1,84 @@
+.appointment-rail,
+.appointment-timecard {
+  border: 1px solid var(--border);
+  background: radial-gradient(ellipse at top left,#39213288,transparent 76%),var(--panel);
+  border-radius: 15px;
+}
+
+.appointment-rail {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin: 8px 0 18px;
+  padding: 13px 15px;
+  animation: appointment-appear 180ms ease-out both;
+}
+
+.appointment-rail-mark,
+.appointment-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #a56580;
+  border-radius: 12px;
+  background: #44283a;
+  color: #ffc1d5;
+}
+
+.appointment-rail-copy { min-width: 0; }
+.appointment-rail-copy strong { display:block;font-size:16px;overflow-wrap:anywhere; }
+.appointment-rail-copy p { margin:2px 0 0;color:var(--muted);font-size:13px; }
+.appointment-rail button { min-height:44px;margin:0;white-space:nowrap; }
+.appointment-eyebrow,.appointment-slot-label { color:#ffc1d5;font-size:11px;font-weight:750;letter-spacing:.085em; }
+.appointment-heading { display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:13px;margin-bottom:18px; }
+.appointment-heading h3,.appointment-timecard h4 { margin:3px 0 1px;color:var(--text);font-size:clamp(20px,3vw,27px);line-height:1.15; }
+.appointment-heading p,.appointment-timecard p { margin:4px 0 0;color:var(--muted);font-size:14px;line-height:1.45; }
+.appointment-form { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:end; }
+.appointment-form label { display:grid;gap:6px;min-width:0;color:var(--text);font-size:13px;font-weight:650; }
+.appointment-form :is(input,select) { width:100%;min-width:0;min-height:44px;margin:0;color-scheme:dark; }
+.appointment-form button,.appointment-actions button,.appointment-slot button { min-height:44px;margin:0; }
+#appointment-setup-note,.appointment-message { margin:0;grid-column:1/-1;color:var(--muted);font-size:13px;line-height:1.45; }
+.appointment-message:not(:empty) { margin-top:14px; }
+.appointment-current { animation:appointment-appear 190ms ease-out both; }
+.appointment-timecard { display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 18px;padding:13px 15px; }
+.appointment-timecard h4 { font-variant-numeric:tabular-nums; }
+.appointment-lineup { display:grid;gap:9px;margin:12px 0; }
+.appointment-slot {
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:13px;
+  background:var(--panel-raised);
+  transition:border-color 180ms ease-out;
+}
+.appointment-slot[data-state='ready'] { border-color:#76a995; }
+.appointment-art { position:relative;display:grid;place-items:center;width:41px;aspect-ratio:2/3;overflow:hidden;border-radius:6px;background:#392636;color:#ffc1d5; }
+.appointment-art img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+.appointment-slot-copy { min-width:0; }
+.appointment-slot h4 { margin:3px 0 2px;font-size:16px;line-height:1.25;overflow-wrap:anywhere; }
+.appointment-slot-status,.appointment-estimate { margin:0;color:var(--muted);font-size:13px;line-height:1.4; }
+.appointment-slot[data-state='ready'] .appointment-slot-status { color:#b1e0ca; }
+.appointment-slot progress { display:block;width:min(100%,300px);height:6px;margin:6px 0;accent-color:#f9a9c2; }
+.appointment-estimate { color:#ffc1d5; }
+.appointment-actions { display:flex;gap:8px;flex-wrap:wrap; }
+.appointment-slot button[aria-disabled='true'],.appointment-actions button[aria-disabled='true'] { color:var(--muted);cursor:default;opacity:.72; }
+
+@keyframes appointment-appear { from { opacity:0;transform:translateY(3px); } to { opacity:1;transform:none; } }
+
+@media (max-width:520px) {
+  .appointment-form { grid-template-columns:1fr; }
+  .appointment-rail { grid-template-columns:auto minmax(0,1fr); }
+  .appointment-rail button { grid-column:2;justify-self:start; }
+  .appointment-slot { grid-template-columns:auto minmax(0,1fr); }
+  .appointment-slot button { grid-column:2;justify-self:start; }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .appointment-rail,.appointment-current { animation:none; }
+  .appointment-slot { transition:none; }
+}

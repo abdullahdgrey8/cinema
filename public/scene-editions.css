@@ -1,0 +1,157 @@
+#player-dialog .scene-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin-top: 8px;
+}
+
+#player-dialog .scene-card-actions .player-control { border-color: var(--player-line); }
+#player-dialog .scene-card-actions p {
+  flex: 1 1 145px;
+  margin: 0;
+  color: var(--player-muted);
+  font-size: .8125rem;
+  line-height: 1.45;
+}
+
+#player-dialog .scene-pin-actions { flex: 0 1 auto; flex-wrap: wrap; justify-content: end; }
+#player-dialog .scene-pin-actions button { overflow-wrap: anywhere; }
+
+#player-dialog .edition-atlas {
+  --atlas-shared: #ef9faf;
+  --atlas-only: #8cc5e9;
+  --atlas-uncertain: #5b5365;
+  margin-top: 16px;
+  border: 1px solid var(--player-line);
+  border-radius: 12px;
+  background: linear-gradient(140deg, #2d202c, transparent 75%), var(--player-ink);
+  overflow: clip;
+}
+
+#player-dialog .edition-atlas > summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: 58px;
+  padding: 8px 12px;
+  gap: 10px;
+  color: var(--player-text);
+  cursor: pointer;
+  list-style: none;
+}
+
+#player-dialog .edition-atlas > summary::-webkit-details-marker { display: none; }
+#player-dialog .edition-atlas > summary:focus-visible,
+#player-dialog .atlas-timings > summary:focus-visible { outline-offset: -4px; }
+#player-dialog .edition-atlas > summary:hover { background: #ffffff0b; }
+#player-dialog .edition-atlas > summary > span { display: grid; gap: 2px; }
+#player-dialog .edition-atlas > summary strong { font-size: .9375rem; }
+#player-dialog .edition-atlas > summary small { color: var(--player-muted); font-size: .8125rem; }
+#player-dialog .edition-atlas > summary svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--atlas-shared);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+#player-dialog .edition-atlas .atlas-chevron { transition: transform 160ms var(--player-ease); }
+#player-dialog .edition-atlas[open] .atlas-chevron { transform: rotate(180deg); }
+
+#player-dialog .atlas-body {
+  padding: 3px 12px 13px;
+  animation: atlas-in 170ms var(--player-ease) both;
+}
+@keyframes atlas-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+#player-dialog .atlas-body p {
+  margin: 0 0 8px;
+  color: var(--player-muted);
+  font-size: .8125rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+#player-dialog .atlas-body .atlas-saved { color: var(--player-text); font-weight: 650; }
+#player-dialog .atlas-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+#player-dialog .edition-atlas button[aria-disabled="true"] { opacity: .62; cursor: default; }
+#player-dialog .atlas-status { margin-top: 8px; color: var(--player-text); }
+#player-dialog .atlas-status:empty { margin: 0; }
+
+#player-dialog .atlas-result {
+  margin-top: 11px;
+  padding: 11px;
+  border: 1px solid var(--player-line);
+  border-radius: 9px;
+  background: #141117;
+  animation: atlas-in 220ms var(--player-ease) both;
+}
+#player-dialog .atlas-summary,
+#player-dialog .atlas-legend { display: flex; flex-wrap: wrap; gap: 5px 12px; margin-bottom: 9px; }
+#player-dialog .atlas-summary span { font-size: .8125rem; color: var(--player-text); font-weight: 650; }
+#player-dialog .atlas-track { margin-block: 9px; }
+#player-dialog .atlas-track > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 3px 8px; margin-bottom: 4px; }
+#player-dialog .atlas-track span, #player-dialog .atlas-track strong { font-size: .75rem; overflow-wrap: anywhere; }
+#player-dialog .atlas-track span { color: var(--player-muted); }
+#player-dialog .atlas-track svg { display: block; width: 100%; height: 12px; overflow: hidden; border-radius: 3px; }
+#player-dialog .atlas-shared { fill: var(--atlas-shared); }
+#player-dialog .atlas-only { fill: var(--atlas-only); }
+#player-dialog .atlas-uncertain { fill: var(--atlas-uncertain); }
+#player-dialog .atlas-legend span { display: flex; align-items: center; gap: 4px; color: var(--player-muted); font-size: .75rem; }
+#player-dialog .atlas-legend span::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--atlas-uncertain); }
+#player-dialog .atlas-legend .atlas-key-shared::before { background: var(--atlas-shared); }
+#player-dialog .atlas-legend .atlas-key-only::before { background: var(--atlas-only); }
+#player-dialog .atlas-body .atlas-qualifier { margin-bottom: 4px; }
+
+#player-dialog .atlas-timings > summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 6px;
+  color: var(--player-text);
+  font-size: .875rem;
+  cursor: pointer;
+}
+#player-dialog .atlas-timings > summary::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin: 0 9px 3px 2px;
+  border: solid currentColor;
+  border-width: 0 1px 1px 0;
+  transform: rotate(-45deg);
+}
+#player-dialog .atlas-timings[open] > summary::before { transform: rotate(45deg); }
+#player-dialog .atlas-timings ol { list-style: none; margin: 0; padding: 0; }
+#player-dialog .atlas-timings li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px 8px;
+  border-top: 1px solid var(--player-line);
+  padding: 6px 0;
+}
+#player-dialog .atlas-timings li > div { display: grid; gap: 2px; }
+#player-dialog .atlas-timings li strong { font-size: .8125rem; }
+#player-dialog .atlas-timings li span, #player-dialog .atlas-pages span { color: var(--player-muted); font-size: .75rem; }
+#player-dialog .atlas-pages { display: flex; align-items: center; justify-content: space-between; gap: 5px; margin-top: 6px; }
+
+@media (min-width: 681px) and (min-height: 620px) {
+  #player-dialog #scene-panel:has(.edition-atlas[open]) > .player-sheet {
+    width: min(555px, calc(100% - 40px));
+    max-height: min(62dvh, 550px);
+  }
+}
+@media (max-width: 500px) {
+  #player-dialog .scene-pin-list li { align-items: start; flex-direction: column; }
+  #player-dialog .scene-pin-actions { justify-content: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #player-dialog .atlas-body, #player-dialog .atlas-result { animation: none; }
+  #player-dialog .edition-atlas .atlas-chevron { transition: none; }
+}

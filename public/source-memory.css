@@ -1,0 +1,44 @@
+.source-memory-release {
+  display: grid;
+  gap: 3px;
+  margin-block: 8px 2px;
+  padding: 7px 9px;
+  border-inline-start: 2px solid #b794eb;
+  border-radius: 4px 8px 8px 4px;
+  background: #211b32;
+  color: #f0e5fc;
+  min-width: 0;
+}
+.source-memory-release[hidden] { display: none; }
+.source-memory-release strong { font-size: .82rem; }
+.source-memory-release small {
+  color: #e1d1f0;
+  white-space: pre-line;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.source-memory-settings {
+  margin: 0 22px 22px;
+  padding: 15px;
+  border: 1px solid #474052;
+  border-radius: 13px;
+  background: #211c2a;
+}
+.source-memory-settings h3 { margin: 0; }
+.source-memory-settings p { margin: 8px 0; }
+.source-memory-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  font-weight: 650;
+}
+.source-memory-toggle input { accent-color: #bd9cf0; }
+.source-memory-settings button { min-height: 44px; }
+.source-memory-settings :is(input,button):focus-visible {
+  outline: 2px solid #d9baff;
+  outline-offset: 2px;
+}
+@media(max-width:460px) {
+  .source-memory-settings { margin-inline: 12px; padding: 11px; }
+}

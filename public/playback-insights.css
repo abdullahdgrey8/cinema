@@ -1,0 +1,162 @@
+.playback-runway {
+  background: color-mix(in srgb, var(--player-ink) 82%, var(--player-panel));
+  color: var(--player-text);
+}
+
+.runway-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px clamp(11px, 2vw, 22px);
+  min-height: 44px;
+  padding: 7px clamp(12px, 2.2vw, 24px);
+  font-size: .8125rem;
+  line-height: 1.35;
+}
+
+.runway-title,
+.runway-readings,
+.runway-reading {
+  display: inline-flex;
+  align-items: center;
+}
+
+.runway-title { gap: 7px; font-weight: 680; }
+.runway-title .cinema-icon { width: 17px; height: 17px; color: var(--player-focus); }
+.runway-readings { flex-wrap: wrap; gap: 5px clamp(9px, 1.8vw, 18px); }
+.runway-reading { gap: 6px; color: var(--player-muted); white-space: nowrap; }
+.runway-reading strong {
+  color: var(--player-text);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.runway-swatch {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 2px;
+}
+.runway-swatch-buffer { background: var(--player-focus); }
+.runway-swatch-prepared {
+  border: 1px solid var(--player-focus);
+  background: repeating-linear-gradient(115deg, var(--player-focus) 0 1px, transparent 1px 3px);
+}
+
+.runway-state {
+  margin-inline-start: auto;
+  color: var(--player-muted);
+  font-size: .78125rem;
+  font-weight: 610;
+}
+.runway-state:is([data-tone="waiting"], [data-tone="risk"], [data-tone="blocked"]) { color: #ffd0b5; }
+
+#player-dialog .release-passport {
+  margin-top: 14px;
+  border: 1px solid var(--player-line);
+  border-radius: 10px;
+  background: var(--player-ink);
+}
+
+#player-dialog .release-passport > summary {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 7px 11px;
+  border-radius: 9px;
+  color: var(--player-text);
+  list-style: none;
+  font-size: .875rem;
+  font-weight: 650;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 160ms var(--player-ease);
+}
+
+#player-dialog .release-passport > summary::-webkit-details-marker { display: none; }
+#player-dialog .release-passport > summary:hover,
+#player-dialog .release-passport[open] > summary { background: var(--player-panel); }
+#player-dialog .release-passport > summary:focus-visible { outline-offset: 1px; }
+.release-passport .passport-icon { width: 18px; height: 18px; color: var(--player-focus); }
+.release-passport .passport-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--player-muted);
+  transition: transform 180ms var(--player-ease);
+}
+.release-passport[open] .passport-chevron { transform: rotate(180deg); }
+
+.release-passport .passport-body {
+  display: grid;
+  gap: 12px;
+  padding: 12px 11px 13px;
+}
+
+.release-passport .passport-body > section + section {
+  padding-top: 10px;
+  border-top: 1px solid var(--player-line);
+}
+
+#player-dialog .release-passport :is(h4, p, dl, dd) { margin: 0; }
+#player-dialog .release-passport h4 {
+  margin-bottom: 4px;
+  color: var(--player-text);
+  font-size: .8125rem;
+  font-weight: 670;
+}
+
+#player-dialog .release-passport .passport-filename {
+  margin-bottom: 6px;
+  color: var(--player-text);
+  font-size: .8125rem;
+  overflow-wrap: anywhere;
+}
+
+.release-passport .passport-claims {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  color: var(--player-muted);
+  font-size: .75rem;
+}
+.release-passport .passport-claims strong { color: var(--player-focus); font-weight: 610; }
+
+.release-passport dl {
+  display: grid;
+  gap: 4px;
+  color: var(--player-muted);
+  font-size: .8125rem;
+  line-height: 1.4;
+}
+.release-passport dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 9rem) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 3px 9px;
+}
+.release-passport dl dd {
+  color: var(--player-text);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 650px) {
+  .runway-state { margin-inline-start: 0; }
+}
+@media (max-width: 440px) {
+  .runway-line { gap: 5px 11px; }
+  .runway-readings { order: 2; flex-basis: 100%; }
+  .runway-state { margin-inline-start: auto; }
+  .release-passport dl > div { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+}
+@media (max-width: 360px) {
+  .runway-state { margin-inline-start: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #player-dialog .release-passport > summary,
+  .release-passport .passport-chevron { transition: none; }
+}
+

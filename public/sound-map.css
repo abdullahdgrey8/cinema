@@ -1,0 +1,115 @@
+#sound-map-panel {
+  --sound-text: var(--player-text, #fff7f5);
+  --sound-muted: var(--player-muted, #c9bbc3);
+  --sound-rose: var(--player-focus, #ffadbf);
+  --sound-line: #493744;
+  min-width: 0;
+  margin: 13px 0;
+  border: 1px solid var(--sound-line);
+  border-radius: 11px;
+  color: var(--sound-text);
+  background: #1e1720;
+}
+#sound-map-panel > summary {
+  display: grid;
+  grid-template-columns: 23px minmax(0, 1fr) 17px;
+  min-height: 53px;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  color: var(--sound-text);
+  background: radial-gradient(ellipse at 6% 0%, #382431, transparent 75%), #251b26;
+  list-style: none;
+  cursor: pointer;
+}
+#sound-map-panel > summary::-webkit-details-marker { display: none; }
+#sound-map-panel > summary svg { width: 100%; color: var(--sound-rose); }
+#sound-map-panel > summary strong { display: block; font-size: .9rem; line-height: 1.35; }
+#sound-map-panel > summary small { display: block; margin-top: 1px; color: var(--sound-muted); font-size: .77rem; line-height: 1.4; }
+#sound-map-panel .sound-map-chevron { transition: transform 140ms ease; }
+#sound-map-panel[open] .sound-map-chevron { transform: rotate(180deg); }
+#sound-map-panel :is(button,summary,h3):focus-visible {
+  outline: 2px solid #ffc5d1;
+  outline-offset: 2px;
+}
+.sound-map-body {
+  min-width: 0;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--sound-line);
+}
+#sound-map-panel[open] .sound-map-body { animation: sound-map-enter 155ms ease-out both; }
+@keyframes sound-map-enter {
+  from { opacity: .78; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.sound-map-toolbar, .sound-map-pages {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px 8px;
+}
+#player-dialog #sound-map-heading {
+  margin: 0;
+  border-radius: 3px;
+  color: var(--sound-text);
+  font-size: .95rem;
+  line-height: 1.35;
+}
+#sound-map-panel .player-control { min-width: 44px; min-height: 44px; padding: 6px 9px; }
+#sound-map-later[aria-pressed="true"] {
+  border-color: #80566c;
+  color: #ffe2ec;
+  background: #482e3d;
+}
+#sound-map-status, #sound-map-limited, #sound-map-page {
+  margin: 5px 0;
+  color: var(--sound-muted);
+  font-size: .8rem;
+  line-height: 1.42;
+}
+#sound-map-status:empty { margin: 0; }
+#sound-map-limited { color: #ffcfab; }
+.sound-map-pages { justify-content: start; margin: 7px 0; }
+#sound-map-page { font-variant-numeric: tabular-nums; }
+.sound-map-list {
+  display: grid;
+  gap: 5px;
+  margin: 7px 0 0;
+  padding: 0;
+  list-style: none;
+}
+#sound-map-panel .sound-map-row {
+  display: grid;
+  grid-template-columns: minmax(2.5rem, auto) minmax(0,1fr) auto;
+  width: 100%;
+  min-height: 45px;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--sound-line);
+  border-radius: 7px;
+  color: var(--sound-text);
+  background: #251c25;
+  font: inherit;
+  font-size: .84rem;
+  text-align: start;
+  transition: border-color 125ms ease, background-color 125ms ease;
+}
+#sound-map-panel .sound-map-row:not([aria-disabled="true"]):hover { border-color: #a56f88; background: #34252f; }
+#sound-map-panel .sound-map-row[aria-disabled="true"] { cursor: default; }
+#sound-map-panel .sound-map-pages button[aria-disabled="true"] { opacity: .63; cursor: default; }
+.sound-map-time { color: var(--sound-rose); font-size: .76rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sound-map-label { min-width: 0; line-height: 1.35; overflow-wrap: anywhere; }
+.sound-map-action { color: var(--sound-rose); font-size: .73rem; line-height: 1.28; }
+.sound-map-row[aria-disabled="true"] .sound-map-action { color: var(--sound-muted); }
+@media (max-width: 440px) {
+  #sound-map-panel .sound-map-row { grid-template-columns: minmax(2.25rem, auto) minmax(0, 1fr); }
+  .sound-map-action { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #sound-map-panel[open] .sound-map-body { animation: none; }
+  #sound-map-panel :is(.sound-map-chevron,.sound-map-row) { transition: none; }
+}

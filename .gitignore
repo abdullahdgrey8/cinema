@@ -1,0 +1,7 @@
+/.local/
+/node_modules/
+/graphify-out/
+/AUDIT.md
+.env
+.env.*
+*.log

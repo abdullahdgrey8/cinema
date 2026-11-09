@@ -1,0 +1,385 @@
+.watch-planner-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px 24px;
+  margin: clamp(18px, 3vw, 36px) 0 clamp(28px, 4vw, 52px);
+  padding: clamp(16px, 2.8vw, 30px);
+  background:
+    radial-gradient(ellipse at 16% 0%, var(--accent-wash), transparent 62%),
+    linear-gradient(115deg, var(--panel-raised), var(--panel));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.watch-planner-entry-copy,
+.watch-planner-entry-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.watch-planner-entry-icon,
+.planner-handoff-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.watch-planner-entry h2 {
+  margin: 0 0 3px;
+  font-size: clamp(18px, 2.3vw, 25px);
+  font-weight: 740;
+  line-height: 1.16;
+  letter-spacing: -.035em;
+}
+
+.watch-planner-entry p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+.watch-planner-entry-action {
+  min-height: 44px;
+  flex: none;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.watch-planner-entry-action .cinema-icon { width: 17px; height: 17px; }
+
+#watch-planner-dialog {
+  width: min(58rem, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--panel);
+  box-shadow: 0 26px 100px #07050ac9;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--border) var(--panel);
+  scroll-padding-block: 16px;
+}
+
+#watch-planner-dialog[open] { animation: planner-open 240ms var(--ease-out) both; }
+#watch-planner-dialog::backdrop { background: #08060ddc; }
+
+@keyframes planner-open {
+  from { opacity: 0; transform: translateY(9px) scale(.99); }
+  to { opacity: 1; transform: none; }
+}
+
+#watch-planner-dialog .planner-shell {
+  --planner-inset: clamp(16px, 3.9vw, 34px);
+  padding-bottom: var(--planner-inset);
+}
+
+#watch-planner-dialog :is(.planner-header, .planner-main, .planner-footer) { padding-inline: var(--planner-inset); }
+
+#watch-planner-dialog .planner-header {
+  height: auto;
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 24px 20px;
+  background:
+    radial-gradient(ellipse at 0% 0%, var(--accent-wash), transparent 66%),
+    linear-gradient(135deg, var(--ink), var(--panel));
+}
+
+#watch-planner-dialog .planner-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 750;
+  letter-spacing: .14em;
+}
+
+#watch-planner-dialog .planner-kicker .cinema-icon { width: 15px; height: 15px; }
+
+#watch-planner-dialog h2 {
+  margin: 4px 0;
+  font-size: clamp(27px, 5vw, 43px);
+  font-weight: 760;
+  line-height: 1.04;
+  letter-spacing: -.05em;
+}
+
+#watch-planner-dialog h3 {
+  margin: 0 0 4px;
+  font-size: clamp(20px, 3vw, 26px);
+  font-weight: 730;
+  line-height: 1.13;
+  letter-spacing: -.035em;
+}
+
+#watch-planner-dialog p { margin: 0; color: var(--muted); font-size: .875rem; }
+#watch-planner-dialog .planner-kicker { color: var(--accent); font-size: .72rem; }
+
+#watch-planner-dialog :is(button, input, select):focus-visible,
+#watch-planner-dialog [tabindex="-1"]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+#watch-planner-dialog :is(button, input, select) { min-height: 44px; }
+#watch-planner-dialog button { touch-action: manipulation; }
+#watch-planner-dialog button:disabled { cursor: default; }
+
+#watch-planner-dialog .planner-close {
+  display: grid;
+  flex: 0 0 44px;
+  place-items: center;
+  width: 44px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--panel-raised);
+}
+
+#watch-planner-dialog .planner-close:hover { border-color: var(--focus); }
+#watch-planner-dialog .planner-modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin: 0 var(--planner-inset) 22px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--bg);
+}
+
+#watch-planner-dialog .planner-modes button {
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: .875rem;
+  font-weight: 690;
+  line-height: 1.3;
+  transition: color 150ms, background-color 150ms, border-color 150ms;
+}
+
+#watch-planner-dialog .planner-modes button:hover { color: var(--text); }
+#watch-planner-dialog .planner-modes button[aria-pressed="true"] {
+  border-color: var(--border);
+  background: var(--panel-raised);
+  color: var(--text);
+  box-shadow: inset 0 -2px var(--accent);
+}
+
+#watch-planner-dialog .planner-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  gap: 10px 14px;
+  margin: 17px 0 10px;
+}
+
+#watch-planner-dialog .planner-program-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; }
+#watch-planner-dialog .planner-add { grid-template-columns: minmax(0, 1fr) auto; }
+#watch-planner-dialog label { display: grid; gap: 5px; min-width: 0; margin: 0; color: var(--muted); font-size: .8125rem; }
+
+#watch-planner-dialog :is(input, select) {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--bg);
+  font: inherit;
+  font-size: .875rem;
+}
+
+#watch-planner-dialog .planner-input-unit { position: relative; display: block; }
+#watch-planner-dialog .planner-input-unit input { padding-inline-end: 3.25rem; }
+#watch-planner-dialog .planner-input-unit > span {
+  position: absolute;
+  inset: 50% 12px auto auto;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+#watch-planner-dialog .planner-status:empty { display: none; }
+#watch-planner-dialog .planner-status:not(:empty) { margin-block: 8px 12px; }
+#watch-planner-dialog .planner-cards,
+#watch-planner-dialog .planner-ballot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+#watch-planner-dialog .planner-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  height: 100%;
+  padding: 12px;
+  background: var(--panel-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+#watch-planner-dialog .planner-poster {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 2 / 3;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 7px;
+  color: var(--accent);
+  background: var(--ink);
+}
+
+#watch-planner-dialog .planner-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+#watch-planner-dialog .planner-card h4 {
+  margin: 4px 0;
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.3;
+  letter-spacing: -.015em;
+  overflow-wrap: anywhere;
+}
+#watch-planner-dialog .planner-state {
+  color: var(--muted);
+  font-size: .75rem;
+  font-weight: 680;
+  overflow-wrap: anywhere;
+}
+#watch-planner-dialog .planner-state:is([data-ready="ready"], [data-ready="local"]) { color: var(--focus); }
+#watch-planner-dialog .planner-facts { color: var(--muted); font-size: .78rem; }
+#watch-planner-dialog :is(.planner-pick-label, .planner-reason) { margin-top: 5px; font-size: .78rem; overflow-wrap: anywhere; }
+#watch-planner-dialog .planner-pick-label { color: var(--focus); font-weight: 650; }
+#watch-planner-dialog .planner-card button {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 5px 8px;
+  font-size: .78rem;
+  white-space: normal;
+}
+#watch-planner-dialog .planner-card button .cinema-icon { width: 15px; height: 15px; }
+
+#watch-planner-dialog .planner-empty {
+  grid-column: 1 / -1;
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+#watch-planner-dialog .planner-program-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin: 17px 0 9px;
+}
+#watch-planner-dialog .planner-program-meta span { color: var(--muted); font-size: .8125rem; }
+#watch-planner-dialog .planner-program { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+#watch-planner-dialog .planner-program-step { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 8px; }
+#watch-planner-dialog .planner-step-number { color: var(--focus); font-size: .875rem; font-weight: 700; padding: 12px 3px; }
+#watch-planner-dialog .planner-program-step .planner-card { height: auto; }
+#watch-planner-dialog :is(.planner-order,.planner-actions) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+#watch-planner-dialog .planner-order button { padding: 5px 10px; font-size: .78rem; }
+#watch-planner-dialog .planner-actions { margin-top: 14px; }
+#watch-planner-dialog .planner-actions button { width: auto; min-inline-size: 9rem; }
+
+#watch-planner-dialog .planner-ballot { margin-top: 16px; }
+#watch-planner-dialog .planner-vote {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 23px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel-raised);
+  text-align: start;
+}
+#watch-planner-dialog .planner-vote:hover { border-color: var(--focus); }
+#watch-planner-dialog .planner-vote[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-wash); }
+#watch-planner-dialog .planner-vote-copy { display: grid; gap: 3px; min-width: 0; overflow-wrap: anywhere; }
+#watch-planner-dialog .planner-vote-copy strong { font-size: .875rem; line-height: 1.25; }
+#watch-planner-dialog .planner-vote-check {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+}
+#watch-planner-dialog .planner-vote-check .cinema-icon { width: 14px; height: 14px; opacity: 0; }
+#watch-planner-dialog .planner-vote[aria-pressed="true"] .planner-vote-check {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--ink);
+}
+#watch-planner-dialog .planner-vote[aria-pressed="true"] .planner-vote-check .cinema-icon { opacity: 1; }
+
+#watch-planner-dialog .planner-handoff {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: radial-gradient(ellipse at 50% 0%, var(--accent-wash), transparent 65%), var(--bg);
+}
+#watch-planner-dialog .planner-handoff-mark { margin-bottom: 6px; }
+#watch-planner-dialog .planner-handoff button,
+#watch-planner-dialog .planner-round-action { margin-top: 9px; }
+#watch-planner-dialog .planner-round-action { margin-bottom: 2px; }
+#watch-planner-dialog .planner-section-heading + .planner-cards { margin-top: 16px; }
+
+#watch-planner-dialog .planner-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 9px 14px;
+  margin: 24px 0 0;
+  padding-top: 15px;
+}
+#watch-planner-dialog .planner-footer strong { font-size: .875rem; }
+#watch-planner-dialog .planner-footer p { font-size: .8rem; }
+#watch-planner-dialog .planner-footer button { flex: none; }
+
+@media (min-width: 781px) {
+  #watch-planner-dialog .planner-program:has(.planner-program-step + .planner-program-step) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+@media (max-width: 780px) {
+  #watch-planner-dialog :is(.planner-cards, .planner-ballot) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  .watch-planner-entry { flex-wrap: wrap; }
+  .watch-planner-entry-action { margin-inline-start: auto; }
+  #watch-planner-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); border-radius: 14px; }
+  #watch-planner-dialog :is(.planner-cards, .planner-ballot) { grid-template-columns: minmax(0, 1fr); }
+  #watch-planner-dialog .planner-program-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #watch-planner-dialog .planner-program-fields button { grid-column: 1 / -1; justify-self: start; }
+  #watch-planner-dialog .planner-add { grid-template-columns: minmax(0, 1fr); }
+  #watch-planner-dialog .planner-add button { justify-self: start; }
+  #watch-planner-dialog .planner-modes button { padding-inline: 3px; font-size: .78rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #watch-planner-dialog[open] { animation: none; }
+  #watch-planner-dialog * { transition-duration: 0s !important; }
+}
+

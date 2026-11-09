@@ -1,0 +1,58 @@
+#scene-sketchbook-panel {
+  min-width: 0;
+  margin: 12px 0;
+  border: 1px solid #4a3848;
+  border-radius: 11px;
+  color: var(--player-text, #fff7f5);
+  background: #211922;
+}
+#scene-sketchbook-panel > summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 8px 11px;
+  border-radius: 10px;
+  background: #2c202c;
+  list-style: none;
+  cursor: pointer;
+}
+#scene-sketchbook-panel > summary::-webkit-details-marker { display: none; }
+#scene-sketchbook-panel > summary svg { flex: 0 0 22px; color: #f5aabe; }
+#scene-sketchbook-panel > summary strong { display: block; font-size: .9rem; }
+#scene-sketchbook-panel > summary small { color: var(--player-muted, #c9bbc3); font-size: .77rem; }
+#scene-sketchbook-panel :is(summary,button):focus-visible { outline: 2px solid #ffc5d1; outline-offset: 2px; }
+.scene-sketchbook-body { padding: 9px 11px 11px; }
+#scene-sketchbook-panel p { margin: 0 0 7px; color: var(--player-muted, #c9bbc3); font-size: .82rem; line-height: 1.5; }
+#scene-sketchbook-panel #scene-sketchbook-status { margin: 7px 0 0; color: #f8cfda; }
+#scene-sketchbook-panel #scene-sketchbook-status:empty { margin: 0; }
+#scene-sketchbook-save { min-height: 44px; }
+#scene-sketchbook-save[aria-disabled="true"] { opacity: .68; cursor: default; }
+#scene-sketchbook-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%, 136px),1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+#scene-sketchbook-gallery[hidden] { display: none; }
+#scene-sketchbook-gallery figure {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid #483544;
+  border-radius: 8px;
+  background: #291d29;
+}
+#scene-sketchbook-gallery canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #151017;
+}
+#scene-sketchbook-gallery figcaption {
+  padding: 5px 8px;
+  color: #f5d6e0;
+  font-size: .78rem;
+  font-variant-numeric: tabular-nums;
+}

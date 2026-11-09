@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0b0f"><title>Cinema</title><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/cinema.css"><link rel="stylesheet" href="/title.css"><link rel="stylesheet" href="/player.css"><link rel="stylesheet" href="/scene-finder.css"><link rel="stylesheet" href="/playback-map.css"><link rel="stylesheet" href="/watch-planner.css"><link rel="stylesheet" href="/watch-appointment.css"><link rel="stylesheet" href="/playback-insights.css"><link rel="stylesheet" href="/warm-playback.css"><link rel="stylesheet" href="/scene-editions.css"><link rel="stylesheet" href="/rescue-playback.css"><link rel="stylesheet" href="/follow-week.css"><link rel="stylesheet" href="/story-orbit.css"><link rel="stylesheet" href="/watched-dialogue.css"><link rel="stylesheet" href="/plugin-guide.css"><link rel="stylesheet" href="/sound-map.css"><link rel="stylesheet" href="/two-track-studio.css"><link rel="stylesheet" href="/scene-sketchbook.css"><link rel="stylesheet" href="/source-memory.css"><link rel="stylesheet" href="/scene-preview.css"></head>
+<body><a class="skip-link" href="#main-content">Skip to content</a>
+<svg class="icon-definitions" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="ico-brand" viewBox="0 0 32 32"><path fill="currentColor" stroke="none" d="M7 4h18a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4Z"/><path fill="#170b10" stroke="none" d="M12 10.6a1 1 0 0 1 1.53-.84l8 5.28a1.15 1.15 0 0 1 0 1.92l-8 5.28a1 1 0 0 1-1.53-.84Z"/></symbol>
+  <symbol id="ico-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="ico-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="ico-left" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+  <symbol id="ico-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="ico-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="ico-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+  <symbol id="ico-play" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M7 4.8a.8.8 0 0 1 1.2-.7l12 7.2a.8.8 0 0 1 0 1.4l-12 7.2a.8.8 0 0 1-1.2-.7Z"/></symbol>
+  <symbol id="ico-filter" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2" fill="currentColor"/><circle cx="15" cy="17" r="2" fill="currentColor"/></symbol>
+  <symbol id="ico-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="ico-bookmark" viewBox="0 0 24 24"><path d="M6 20V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15l-6-4Z"/></symbol>
+  <symbol id="ico-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="ico-download" viewBox="0 0 24 24"><path d="M12 4v11m-4-4 4 4 4-4M5 16v4h14v-4"/></symbol>
+  <symbol id="ico-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4m10 0h4M3 15h4m10 0h4"/></symbol>
+</svg>
+<header class="cinema-bar">
+  <button class="cinema-logo" data-view="home" type="button" aria-label="Cinema home"><svg class="cinema-icon logo-icon" aria-hidden="true"><use href="#ico-brand"/></svg><span>Cinema</span></button>
+  <nav class="cinema-nav" aria-label="Main navigation">
+    <button data-view="home" type="button" class="active" aria-current="page">Home</button>
+    <button data-view="movies" type="button">Movies</button>
+    <button data-view="tv" type="button">Series</button>
+    <button data-view="korean" type="button" aria-label="Korean dramas">K-dramas</button>
+    <button data-view="anime" type="button">Anime</button>
+    <button data-view="library" type="button">My Library</button>
+  </nav>
+  <div class="cinema-actions">
+    <button id="companion-add" class="top-icon companion-add" type="button" data-companion-add aria-label="Add magnet" aria-haspopup="dialog" hidden><svg class="cinema-icon" aria-hidden="true"><use href="#ico-download"/></svg><span>Add magnet</span></button>
+    <button id="search-toggle" class="top-icon" type="button" aria-label="Search" aria-controls="search-section" aria-expanded="false"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-search"/></svg><span class="search-label">Search</span></button>
+    <details class="cinema-menu" id="cinema-menu">
+      <summary class="top-icon" aria-label="More options"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-more"/></svg></summary>
+      <div class="cinema-menu-panel">
+        <button data-view="downloads" type="button">Downloads <small id="download-count">0</small></button>
+        <button data-view="library" type="button">My Library <small id="library-count">0</small></button>
+        <button data-view="sources" type="button">Source plugins</button>
+        <button data-view="other" type="button">More categories</button>
+        <button id="settings-button" type="button">Settings</button>
+        <div class="connection"><i id="connection-dot"></i><div id="connection-text">Connecting…</div></div>
+      </div>
+    </details>
+  </div>
+</header>
+<main id="main-content" tabindex="-1">
+<div class="view-location"><button id="view-back" class="text-button view-back" type="button" hidden><svg class="cinema-icon" aria-hidden="true"><use href="#ico-left"/></svg>Back</button><span id="view-name" class="sr-only">Home</span><span id="live-status" class="live-status sr-only" role="status">Connecting</span></div>
+<div id="notice" role="status" hidden></div>
+<section id="companion-intro" class="companion-intro" aria-label="Scene Preview profile" hidden><span>Scene Preview</span><p>Add a magnet here. Your existing library and search plugins are in Cinema.</p></section>
+<section id="appointment-rail" class="appointment-rail" aria-label="Watch appointment" hidden></section>
+<section id="home-heading" class="spotlight" aria-label="Featured titles">
+  <div class="spotlight-frame" id="spotlight-frame">
+    <div class="spotlight-placeholder"><span class="spotlight-kicker"><span></span>Now showing</span><h1>Find your<br>next favorite.</h1><p>Movies, series, Korean dramas and anime.</p><button class="hero-primary" id="spotlight-explore" type="button">Discover titles <svg class="cinema-icon" aria-hidden="true"><use href="#ico-down"/></svg></button></div>
+  </div>
+  <div class="spotlight-controls" id="spotlight-controls" hidden>
+    <button id="spotlight-previous" class="round-control" type="button" aria-label="Previous featured title"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-left"/></svg></button>
+    <div id="spotlight-steps" class="spotlight-steps" role="group" aria-label="Choose a featured title"></div><span id="spotlight-position" class="sr-only" aria-live="polite"></span>
+    <button id="spotlight-next" class="round-control" type="button" aria-label="Next featured title"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-right"/></svg></button>
+  </div>
+</section>
+<section id="watch-planner-entry" class="watch-planner-entry" aria-label="Watch planner">
+  <div class="watch-planner-entry-copy"><span class="watch-planner-entry-icon" aria-hidden="true"><svg class="cinema-icon"><use href="#ico-film"/></svg></span><div><h2>Make a night of it</h2><p>Find something that fits your evening.</p></div></div>
+  <button id="watch-planner-open" class="subtle watch-planner-entry-action" type="button" aria-haspopup="dialog" aria-controls="watch-planner-dialog">Plan a watch <svg class="cinema-icon" aria-hidden="true"><use href="#ico-right"/></svg></button>
+</section>
+<section id="view-intro" class="view-intro" hidden><span class="eyebrow" id="view-eyebrow"></span><h1 id="view-title"></h1><p class="muted" id="view-description"></p><div id="view-source-chips" class="chips"></div></section>
+<section class="search-section" id="search-section" aria-label="Search Cinema" hidden>
+<div id="watched-dialogue-search"></div>
+  <form id="search-form"><svg class="cinema-icon search-glass" aria-hidden="true"><use href="#ico-search"/></svg><input id="query" aria-label="Search titles" placeholder="Search movies, shows and more" required autocomplete="off">
+    <details id="search-filters" class="search-filters"><summary class="top-icon" aria-label="Search filters"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-filter"/></svg></summary><div class="filter-panel">
+      <label>Category<select id="search-category" aria-label="Search category"><option value="all">All categories</option><option value="movies">Movies</option><option value="tv">TV shows</option><option value="anime">Anime</option></select></label>
+      <label>Source<select id="search-source" aria-label="Search source"><option value="">All enabled plugins</option></select></label>
+      <span id="source-hint" class="small muted"></span>
+    </div></details>
+    <button class="primary" id="search-button">Search</button>
+    <button class="top-icon" id="dismiss-search" type="button" aria-label="Close search field"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-close"/></svg></button>
+  </form>
+</section>
+<section id="pending-section" class="pending-section" hidden><span class="spinner" aria-hidden="true"></span><div><strong id="pending-title">Getting your title ready</strong><p id="pending-description">Connecting to your download.</p></div><button id="retry-add" class="subtle" hidden>Try again</button><button class="subtle" data-view="downloads">Downloads</button></section>
+<section id="search-results" hidden><div class="section-heading"><div><span class="eyebrow">FROM YOUR SOURCES</span><h2 id="results-title">Search results</h2></div><button id="close-search" class="subtle">Close search ×</button></div><div id="title-catalog" class="title-catalog" hidden></div><p id="metadata-note" class="muted small" role="status"></p><div class="results-toolbar"><p id="results-status" class="muted" role="status"></p><label class="compact-label">Sort<select id="results-sort"><option value="recommended">Recommended to start</option><option value="seeders">Most seeders</option><option value="leechers">Most leechers</option><option value="size-small">Smallest first</option><option value="size-large">Largest first</option><option value="name">Title</option></select></label></div><div id="search-warnings" class="inline-warning" hidden></div><div id="results-grid" class="results-grid"></div><nav class="result-pagination" id="result-pagination" aria-label="Search result pages" hidden><span id="result-page-label"></span><button id="result-previous" class="subtle" type="button">Previous</button><button id="result-next" class="subtle" type="button">Next</button></nav></section>
+<dialog id="watched-catch-up" aria-labelledby="watched-catch-up-title"></dialog>
+<section id="continue-section" class="continue-section" aria-labelledby="continue-title" hidden><div class="section-heading"><h2 id="continue-title">Continue watching</h2></div><div id="continue-list" class="continue-list"></div></section>
+<section id="follow-week-entry" class="follow-week-entry" aria-labelledby="follow-week-entry-title">
+  <div class="follow-week-entry-copy"><span class="follow-week-entry-icon"><svg class="cinema-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M7.5 3.5v4m9-4v4M4 10h16m-12 4h2m4 0h2m-8 3h2"/></svg></span><div><h2 id="follow-week-entry-title">This Week</h2><p>See when episodes from your followed series air.</p></div></div>
+  <button id="follow-week-home" type="button" class="subtle" data-follow-week-open aria-haspopup="dialog" aria-controls="follow-week-dialog">Open This Week <svg class="cinema-icon" aria-hidden="true"><use href="#ico-right"/></svg></button>
+</section>
+<section id="discover-section" aria-labelledby="discovery-heading">
+  <div class="section-heading discovery-heading"><div><span class="discovery-kicker">THE LINEUP</span><h2 id="discovery-heading">Discover</h2></div>
+    <div class="discover-controls"><div class="discover-period-switch" role="group" aria-label="Discovery period"><button type="button" data-discover-period="week" aria-pressed="true">This week</button><button type="button" data-discover-period="month" aria-pressed="false">This month</button></div>
+    <select id="discover-period" aria-label="Discovery period" hidden><option value="week">This week</option><option value="month">This month</option></select>
+    <details class="browse-options" id="browse-options"><summary class="top-icon" aria-label="Discovery filters"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-filter"/></svg></summary>
+      <div class="discovery-tools"><label>Category<select id="discover-filter" aria-label="Browse category"><option value="all">Everything</option><option value="movies">Movies</option><option value="tv">TV shows</option><option value="korean">Korean dramas</option><option value="anime">Anime</option></select></label>
+      <button class="subtle" id="discover-refresh" type="button">Refresh picks</button><p id="discover-warning" class="muted small"></p></div>
+    </details></div>
+  </div>
+  <p id="discover-page-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p><p id="discover-status" class="muted" role="status">Getting your picks ready…</p><div id="discover-rows"></div>
+</section>
+<section id="library-section" hidden><div class="section-heading"><div><span class="eyebrow" id="library-eyebrow">Ready when you are</span><h1 id="library-title">My Library</h1></div><button class="subtle" id="refresh">Refresh</button></div><div class="collection-toolbar" id="collection-toolbar" hidden><input id="library-filter" placeholder="Filter your collection…" aria-label="Filter library"><select id="library-sort" aria-label="Sort library"><option value="recent">Recently added</option><option value="continue">Recently watched</option><option value="name">Title</option><option value="progress">Download progress</option></select></div><div id="download-summary" class="download-summary" hidden></div><div id="library-grid" class="library-grid"></div></section>
+<section id="watchlist-section" class="watchlist-section" aria-labelledby="watchlist-title" hidden><div class="section-heading"><h2 id="watchlist-title">My List</h2><button id="follow-week-list" type="button" class="subtle follow-week-list-action" data-follow-week-open aria-haspopup="dialog" aria-controls="follow-week-dialog"><svg class="cinema-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="15" rx="2"/><path d="M7.5 3.5v4m9-4v4M4 10h16m-12 4h2m4 0h2m-8 3h2"/></svg>This Week</button></div><div id="watchlist-grid" class="watchlist-grid"></div></section>
+<section id="sources-section" hidden><div class="section-heading"><div><h1>Your sources</h1><p id="plugin-count" class="muted" role="status"></p></div><button id="plugin-refresh" class="subtle" type="button">Refresh plugins</button></div><p class="muted">Cinema lists the plugins installed in qBittorrent. Browse an enabled plugin to see its suggested searches and release details.</p><p id="plugin-refresh-status" class="muted small" role="status"></p><div class="collection-toolbar"><input id="plugin-filter" placeholder="Find a plugin…" aria-label="Filter plugins"><select id="plugin-group" aria-label="Plugin group"><option value="all">All categories</option><option value="movies">Movies</option><option value="tv">TV shows</option><option value="anime">Anime</option><option value="other">Miscellaneous / general</option></select><select id="plugin-status" aria-label="Plugin status"><option value="all">All installed plugins</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option></select></div><section id="plugin-browse" class="plugin-guide" aria-labelledby="plugin-browse-title" hidden>
+  <div class="plugin-guide-top"><button type="button" class="subtle" id="plugin-browse-back"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-left"/></svg>All plugins</button></div>
+  <div class="plugin-guide-hero">
+    <div class="plugin-guide-heading"><p class="plugin-guide-kicker">PLUGIN GUIDE</p><h2 id="plugin-browse-title" tabindex="-1"></h2><p id="plugin-browse-description"></p></div>
+    <div class="plugin-guide-controls">
+      <label>Category<select id="plugin-browse-category" aria-label="Plugin browse category"><option value="all">Overview</option></select></label>
+      <label id="plugin-browse-period-field" hidden>Popularity period<select id="plugin-browse-period" aria-label="Plugin browse period"><option value="week">This week</option><option value="month">This month</option></select></label>
+    </div>
+  </div>
+  <div class="plugin-guide-feedback">
+    <p id="plugin-browse-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div class="plugin-guide-actions">
+      <button type="button" class="subtle" id="plugin-browse-retry" hidden>Try again</button>
+      <button type="button" class="subtle" id="plugin-browse-refresh">Recheck this page</button>
+    </div>
+  </div>
+  <nav class="plugin-guide-pages" id="plugin-browse-pages" aria-label="Plugin suggestion pages" hidden>
+    <button type="button" class="subtle" id="plugin-browse-previous">Previous</button><span id="plugin-browse-page-label"></span><button type="button" class="subtle" id="plugin-browse-next">Next</button>
+  </nav>
+  <div id="plugin-browse-results"></div>
+</section><div id="sources-grid" class="sources-grid"></div></section>
+<footer><span class="footer-brand"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-brand"/></svg>Cinema</span><button class="text-button" data-view="library" type="button">My Library</button><button class="text-button" data-view="downloads" type="button">Downloads</button></footer></main>
+<section id="player-dock" class="player-dock" hidden aria-label="Active playback">
+  <button id="restore-player" class="dock-main" type="button">
+    <span class="dock-icon" aria-hidden="true"><svg class="cinema-icon"><use href="#ico-play"/></svg></span>
+    <span><strong id="dock-title"></strong><small id="dock-status"></small></span>
+  </button>
+  <button id="dock-toggle" class="subtle" type="button" hidden>Pause</button>
+  <button id="dock-scene" class="subtle" type="button" hidden>Scene ready</button>
+  <button id="dock-stop" class="close" type="button" aria-label="Stop playback and keep download"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-close"/></svg></button>
+  <button id="dock-warm-return" class="player-control" type="button" hidden></button>
+</section>
+<dialog id="episodes-dialog" aria-labelledby="episodes-title"><div class="dialog-heading"><div><span class="eyebrow">PICK UP THE STORY</span><h2 id="episodes-title">Episodes & seasons</h2></div><div class="week-episode-header-actions"><button id="episodes-follow" type="button" class="subtle" aria-pressed="false" hidden><span>Follow</span></button><button type="button" class="close" data-close="episodes-dialog" aria-label="Close episodes">×</button></div></div><div id="episodes-summary" class="episodes-summary"></div><p id="episodes-status" class="muted" role="status" aria-live="polite"></p><p id="episodes-warning" class="inline-warning" hidden></p><div id="episodes-toolbar" class="episodes-toolbar" hidden><label>Season<select id="episodes-season" aria-label="Choose a season"></select></label><div class="episode-list-filters"><label class="check-label"><input id="episodes-aired-only" type="checkbox"> Aired episodes only</label><label>Find an episode<input id="episodes-filter" placeholder="Episode name or number…" aria-label="Filter episodes"></label></div></div><div id="episodes-list" class="episodes-list"></div><nav id="episodes-pagination" class="episode-pagination" aria-label="Episode pages" hidden><button id="episodes-page-previous" class="subtle" type="button" aria-label="Previous episode page">← Previous</button><span id="episodes-page-label"></span><button id="episodes-page-next" class="subtle" type="button" aria-label="Next episode page">Next →</button></nav><section id="episode-sources" class="episode-sources" hidden aria-labelledby="episode-sources-title"><div class="section-heading"><div><span class="eyebrow">FOR YOUR SELECTED EPISODE</span><h3 id="episode-sources-title" tabindex="-1"></h3></div><button class="subtle" id="episode-cancel-search" type="button">Cancel search</button></div><p id="episode-source-status" class="muted" role="status" aria-live="polite"></p><div id="episode-source-list"></div><button class="subtle" id="episode-retry-search" type="button" hidden>Search sources again</button></section><div class="episodes-footer"><a id="episodes-attribution" target="_blank" rel="noopener noreferrer" hidden>Episode information from TVmaze ↗</a><button class="subtle" id="episodes-retry-catalog" type="button" hidden>Retry episode list</button><span class="muted small">Episode metadata and torrent availability are checked separately.</span></div></dialog><dialog id="title-detail-dialog" aria-labelledby="title-detail-title"><div class="dialog-heading"><h2 id="title-detail-title"></h2><button class="close" data-close="title-detail-dialog" aria-label="Close title details">×</button></div><div id="title-detail-body"></div></dialog><dialog id="settings" aria-labelledby="settings-title"><form id="connection-form"><div class="dialog-heading"><h2 id="settings-title">Settings</h2><button type="button" class="close" data-close="settings" aria-label="Close settings">×</button></div><h3>qBittorrent connection</h3><p class="muted">Connect to qBittorrent running on this PC.</p><label>Web UI address<input name="url" required value="http://127.0.0.1:8080"></label><label>Username<input name="username" required value="admin" autocomplete="username"></label><label>Password<input name="password" type="password" autocomplete="current-password" placeholder="Your Web UI password"></label><p class="muted small">Credentials are saved locally on this PC and excluded from Git.</p><button class="primary" type="submit">Connect to qBittorrent →</button><p id="connection-error" role="alert"></p></form>
+<section class="download-location-settings" id="download-location-settings" aria-labelledby="download-location-title" hidden>
+  <h3 id="download-location-title">Download location</h3>
+  <p class="muted">Choose where Cinema saves new downloads. Existing files stay in their folders.</p>
+  <div class="download-location-current">
+    <p id="download-location-status" role="status" aria-atomic="true">Checking download location…</p>
+    <p id="download-location-current-path" class="download-location-path" hidden></p>
+  </div>
+  <form id="download-location-form" hidden>
+    <label for="download-location-path">Download folder</label>
+    <div class="download-location-entry">
+      <input id="download-location-path" type="text" placeholder="D:\Movies" maxlength="1024" autocomplete="off" spellcheck="false" aria-describedby="download-location-help download-location-error">
+      <button id="download-location-browse" class="subtle" type="button" hidden>Browse…</button>
+    </div>
+    <p id="download-location-help" class="muted small">Enter the full path to an existing folder on this PC.</p>
+    <div class="download-location-actions">
+      <button id="download-location-save" class="primary" type="submit" disabled>Save location</button>
+      <button id="download-location-default" class="subtle" type="button" disabled>Use qBittorrent default</button>
+    </div>
+  </form>
+  <p id="download-location-error" role="alert" aria-atomic="true"></p>
+  <button id="download-location-retry" class="subtle" type="button" hidden>Try again</button>
+</section>
+<section class="cache-settings" aria-labelledby="cache-title"><h3 id="cache-title">Playback cache</h3><p class="muted">Cinema stores prepared video here. Clearing this cache keeps original downloads.</p><p id="cache-size" role="status">Checking cache size…</p><div class="cache-actions"><label>Cache limit<select id="cache-limit" disabled><option value="">No limit</option><option value="1">1 GiB</option><option value="2">2 GiB</option><option value="5">5 GiB</option><option value="10">10 GiB</option><option value="20">20 GiB</option></select></label><button id="cache-clear" class="subtle" type="button" disabled>Clear unused cache</button></div><div id="cache-confirm" class="cache-confirm" hidden><p>Clear unused prepared videos? Cinema can prepare them again when you play.</p><button id="cache-confirm-clear" class="subtle" type="button">Clear cache</button><button id="cache-cancel-clear" class="text-button" type="button">Cancel</button></div><p id="cache-error" role="alert"></p></section><section class="source-memory-settings" aria-labelledby="source-memory-title">
+  <h3 id="source-memory-title">Source Memory</h3>
+  <p class="muted">See how long an exact release took from preparation to its first picture on this PC.</p>
+  <label class="source-memory-toggle"><input type="checkbox" id="source-memory-enabled" disabled> Remember playback starts</label>
+  <p class="muted small">Timing history stays on this PC for up to 30 days. Turning this off hides saved starts and stops collecting new ones.</p>
+  <button class="subtle" id="source-memory-clear" type="button" disabled>Clear timing history</button>
+  <div id="source-memory-confirm" hidden>
+    <p>Clear all saved start times? Your downloads will stay in the library.</p>
+    <button class="subtle" id="source-memory-confirm-clear" type="button">Clear saved starts</button>
+    <button class="text-button" id="source-memory-cancel-clear" type="button">Cancel</button>
+  </div>
+  <p class="muted small" id="source-memory-status" role="status" aria-atomic="true">Source Memory is off.</p>
+</section></dialog>
+<dialog id="watch-planner-dialog" aria-labelledby="watch-planner-heading"></dialog>
+<dialog id="follow-week-dialog" aria-labelledby="follow-week-title">
+  <header class="week-header"><div><span class="eyebrow">YOUR SERIES CALENDAR</span><h2 id="follow-week-title">This Week</h2><p>See what’s airing from the series you follow.</p></div><button id="follow-week-close" class="week-close" type="button" aria-label="Close This Week"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-close"/></svg></button></header>
+  <div class="week-body">
+    <div class="week-nav"><div class="week-range-controls"><button id="follow-week-previous" class="week-arrow" type="button" aria-label="Previous week"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-left"/></svg></button><strong id="follow-week-range"></strong><button id="follow-week-next" class="week-arrow" type="button" aria-label="Next week"><svg class="cinema-icon" aria-hidden="true"><use href="#ico-right"/></svg></button></div><button id="follow-week-today" class="subtle" type="button">Today</button></div>
+    <div id="follow-week-days" class="week-days" role="tablist" aria-label="Days in the selected week"></div>
+    <div class="week-warning-row"><p id="follow-week-warning" hidden></p><button id="follow-week-retry" class="subtle" type="button" hidden>Retry schedules</button></div>
+    <section id="follow-week-day-panel" class="week-day-panel" role="tabpanel" aria-labelledby="follow-week-day-0" tabindex="0"><h3 id="follow-week-day-title"></h3><p id="follow-week-feedback" class="week-feedback"></p><ul id="follow-week-episodes" class="week-episode-list" hidden></ul><div id="follow-week-empty" class="week-empty"></div></section>
+    <details id="follow-week-manage" class="week-manage" hidden><summary>Followed series <span id="follow-week-count"></span></summary><ul id="follow-week-manage-list"></ul></details>
+    <p id="follow-week-undated" class="week-undated" hidden></p><p id="follow-week-live" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  </div>
+  <footer class="week-footer"><span>Times shown in your local time zone.</span><a href="https://www.tvmaze.com/" target="_blank" rel="noopener noreferrer">Schedule from TVmaze ↗</a></footer>
+</dialog>
+<dialog id="player-dialog" aria-labelledby="player-title">
+  <div class="player-top">
+    <button class="player-control player-back" id="close-player" type="button" aria-label="Back to browsing and keep playback available" autofocus>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14"/></svg>
+      <span>Back</span>
+    </button>
+    <h2 id="player-title"></h2>
+    <button class="player-control player-stop" id="stop-player" type="button" aria-label="Stop playback and keep download">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+      <span>Stop</span>
+    </button>
+  </div>
+
+  <section id="warm-return-bar" class="warm-return-bar" hidden></section>
+
+  <div class="video-stage">
+    <video id="video" controls playsinline preload="auto" aria-labelledby="player-title"></video>
+    <div id="player-placeholder" data-opening-step="files">
+      <img id="player-opening-art" alt="" aria-hidden="true" decoding="async" hidden>
+      <div class="player-preparing-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M8 5.5v13L19 12 8 5.5Z"/></svg>
+      </div>
+      <h3 id="player-phase">Getting your video ready</h3>
+      <p id="player-phase-detail">You can keep browsing while we get it ready.</p>
+      <ol class="opening-steps" aria-hidden="true">
+        <li>Find video</li><li>Prepare opening</li><li>Start picture</li>
+      </ol>
+      <button id="player-opening-play" class="player-primary opening-play" type="button" hidden>Play video</button>
+      <button id="player-fast-start" class="player-control player-recover" type="button" aria-controls="rescue-panel" hidden>
+        Try Fast Start
+      </button>
+    </div>
+    <div id="resume-choice" class="resume-choice" hidden>
+      <h3>Pick up where you left off</h3>
+      <p id="resume-message" role="status"></p>
+      <div>
+        <button id="resume-saved" class="player-primary" type="button" disabled>Resume watching</button>
+        <button id="resume-beginning" class="player-control" type="button">Start over</button>
+      </div>
+    </div>
+  </div>
+
+  <section id="watched-jump" class="watched-player-handoff" aria-labelledby="watched-jump-title" hidden>
+    <div><p class="eyebrow">A WATCHED MOMENT</p><h3 id="watched-jump-title" tabindex="-1">Find your place</h3><p id="watched-jump-status" role="status"></p></div>
+    <div><button id="watched-jump-action" class="player-primary" type="button" disabled>Jump</button>
+      <button id="watched-jump-play" class="player-control" type="button">Play video</button></div>
+  </section>
+  <div class="watched-player-entry"><button id="watched-player-recap" class="player-control" type="button" aria-controls="watched-player-catch-up" hidden>Catch Up</button></div>
+  <div id="watched-player-catch-up" hidden></div>
+  <section id="playback-runway" class="playback-runway" aria-label="Playback runway" hidden></section>
+  <details id="timeline-panel" class="timeline-panel">
+    <summary>
+      <svg class="cinema-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18M3 19h18M3 12h7m4 0h7m-9-3v6"/></svg>
+      <span>Playback map</span>
+      <span class="timeline-summary">Preparing video</span>
+      <svg class="cinema-icon timeline-chevron" aria-hidden="true"><use href="#ico-down"/></svg>
+    </summary>
+    <div class="timeline-body">
+      <div class="timeline-heading"><span>YOUR TIMELINE</span><output class="timeline-time">0:00</output></div>
+      <div class="timeline-track">
+        <div class="timeline-bed" aria-hidden="true"><div class="timeline-ranges"></div><span class="timeline-playhead"></span><span id="timeline-selection-marker" class="timeline-selection-marker" hidden></span></div>
+        <input type="range" min="0" max="0" step="0.1" value="0" aria-label="Seek within ready video" aria-describedby="timeline-help" disabled>
+      </div>
+      <div class="timeline-pins" role="group" aria-label="Scene pins on the timeline"></div>
+      <div class="timeline-legend" id="timeline-help"><span><i class="is-ready"></i>Ready to watch</span><span><i class="is-prepared"></i>Preparing</span><span><i></i>Unavailable</span></div>
+      <div id="timeline-selection" class="timeline-selection" role="group" aria-label="Selected moment" hidden>
+        <div class="timeline-selection-copy"><span>Selected moment</span><strong id="timeline-selection-time"></strong></div>
+        <div class="timeline-selection-actions">
+          <button id="timeline-selection-preview" class="player-primary" type="button">Check preview</button>
+          <button id="timeline-selection-jump" class="player-primary" type="button" hidden>Jump</button>
+          <button id="timeline-selection-return" class="player-control" type="button">Return to playhead</button>
+        </div>
+      </div>
+      <p class="timeline-feedback" role="status"></p>
+    </div>
+  </details>
+  <section id="scene-arrival" class="scene-arrival" aria-label="Followed scene" hidden>
+    <svg class="cinema-icon" aria-hidden="true"><use href="#ico-bookmark"/></svg>
+    <span role="status"></span>
+    <button class="player-primary scene-arrival-jump" type="button" hidden>Jump to scene</button>
+    <button class="player-control scene-arrival-cancel" type="button" aria-label="Stop following this scene">Dismiss</button>
+  </section>
+
+  <div class="player-actionbar">
+    <div class="player-feedback">
+      <p id="playback-status" role="status"></p>
+      <button id="player-quick-retry" class="player-control player-recover" type="button" hidden>Try again</button>
+      <button id="rescue-reopen" class="player-control player-recover" type="button" hidden>Reopen original</button>
+      <button id="alternate-source" class="player-control player-recover" type="button" hidden>Find another source</button>
+    </div>
+    <div class="player-tools" role="group" aria-label="Playback tools">
+      <details id="rescue-panel" class="player-disclosure rescue-panel" name="cinema-player-tools" hidden>
+        <summary class="player-control">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10l4 4m0-5v5h-5M20 17H10l-4-4m0 5v-5h5"/></svg>
+          <span data-rescue-label>Rescue</span>
+        </summary>
+        <div class="player-sheet" role="region" aria-labelledby="rescue-heading">
+          <div class="rescue-title"><span>PLAYBACK OPTIONS</span><h3 id="rescue-heading" data-rescue-title>Try another release</h3></div>
+          <p data-rescue-intro>Your current video stays open while Cinema checks a replacement.</p>
+          <p class="rescue-status" data-rescue-status role="status" aria-live="polite" aria-atomic="true"></p>
+          <ul class="rescue-options" data-rescue-options aria-label="Matching local releases" hidden></ul>
+          <div class="rescue-ready" data-rescue-ready hidden>
+            <strong data-rescue-selected></strong>
+            <div class="rescue-actions">
+              <button class="player-primary" type="button" data-rescue-scene hidden>Switch and resume</button>
+              <button class="player-control" type="button" data-rescue-beginning>Play from beginning</button>
+            </div>
+          </div>
+          <div class="rescue-actions rescue-footer">
+            <button class="player-control" type="button" data-rescue-cancel hidden>Cancel check</button>
+            <button class="player-control" type="button" data-rescue-refresh>Check My Library</button>
+            <button class="player-control" type="button" data-rescue-find>Find another release</button>
+          </div>
+        </div>
+      </details>
+      <button id="player-episodes" class="player-control" type="button" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16m-10 3 4 2-4 2v-4Z"/></svg>
+        Episodes
+      </button>
+      <details id="audio-panel" class="player-disclosure" name="cinema-player-tools" hidden>
+        <summary class="player-control">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9a4 4 0 0 1 0 6m3-8a7 7 0 0 1 0 10"/></svg>
+          Audio
+        </summary>
+        <div class="player-sheet player-audio-sheet" role="region" aria-labelledby="player-audio-title">
+          <h3 id="player-audio-title">Audio</h3>
+          <div class="player-audio-options" role="group" aria-label="Audio track">
+            <button class="player-control player-audio-option" type="button" data-audio-role="original" aria-pressed="true" aria-label="Original" aria-describedby="player-audio-original-help">
+              <strong>Original</strong><span id="player-audio-original-help">Use the original soundtrack</span>
+            </button>
+            <button class="player-control player-audio-option" type="button" data-audio-role="description" aria-pressed="false" aria-label="Audio description" aria-describedby="player-audio-description-help">
+              <strong>Audio description</strong><span id="player-audio-description-help">Hear narration of the action on screen</span>
+            </button>
+          </div>
+          <p class="muted small player-audio-status" data-audio-status role="status" aria-atomic="true"></p>
+        </div>
+      </details>
+      <details id="subtitle-panel" class="subtitle-panel player-disclosure" name="cinema-player-tools">
+        <summary class="player-control">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 11h3m4 0h3m-10 3h2m3 0h5"/></svg>
+          Subtitles
+        </summary>
+        <div class="player-sheet" role="region" aria-label="Subtitle settings">
+          <h3>Subtitles</h3>
+          <div class="subtitle-controls">
+            <label class="check-label"><input type="checkbox" id="subtitle-enabled"> Show subtitles</label>
+            <label class="subtitle-timing">Timing offset <input id="subtitle-offset" type="number" min="-120" max="120" step="0.5" value="0" aria-label="Subtitle timing offset in seconds"></label>
+            <button id="subtitle-remove" type="button" class="player-control">Remove track</button>
+          </div>
+          <p id="subtitle-status" class="muted small" role="status">Search for English subtitles or add a file.</p>
+          <div class="subtitle-import">
+            <label class="player-control">Import subtitle
+              <input id="subtitle-file" type="file" accept=".srt,.vtt,.ass,.ssa,text/vtt">
+            </label>
+            <span class="muted small">SRT, VTT or ASS</span>
+          </div>
+          <details id="two-track-panel" class="two-track-studio">
+            <summary>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 5h16v6H4zm0 8h16v6H4zm3-5h5m-5 8h7"/></svg>
+              <span><strong>Two-track Studio</strong><small>Compare captions at the current moment</small></span>
+              <svg class="studio-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="studio-body" role="region" aria-labelledby="two-track-heading">
+              <h3 id="two-track-heading" tabindex="-1">Caption comparison</h3>
+              <div class="studio-cards">
+                <article class="studio-card">
+                  <h4>Track 1 <span>Primary</span></h4><p id="two-track-primary-name" class="studio-name" dir="auto"></p>
+                  <p id="two-track-primary-line" class="studio-line" dir="auto"></p>
+                </article>
+                <article class="studio-card">
+                  <h4>Track 2 <span>Second</span></h4><p id="two-track-secondary-name" class="studio-name" dir="auto"></p>
+                  <p id="two-track-secondary-line" class="studio-line" dir="auto"></p>
+                </article>
+              </div>
+              <div class="studio-actions">
+                <label class="player-control studio-import">Choose second subtitle
+                  <input id="two-track-file" type="file" accept=".srt,.vtt,.ass,.ssa" disabled>
+                </label>
+                <label class="studio-offset">Second offset
+                  <input id="two-track-offset" type="number" min="-120" max="120" step="0.001" value="0" aria-label="Second subtitle offset in seconds" disabled>
+                  <span>sec</span>
+                </label>
+                <button type="button" class="player-control" id="two-track-reset" disabled>Reset offset</button>
+                <button type="button" class="player-control" id="two-track-remove" hidden>Remove second track</button>
+              </div>
+              <div class="studio-actions studio-pairing">
+                <button type="button" class="player-control" id="two-track-restore" hidden>Restore saved track</button>
+                <button type="button" class="player-control" id="two-track-forget" hidden>Forget saved pair</button>
+              </div>
+              <p id="two-track-overlap" class="studio-overlap" hidden></p>
+              <button type="button" class="player-primary" id="two-track-jump" hidden>Jump to overlap</button>
+              <p id="two-track-status" class="studio-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            </div>
+          </details>
+          <form id="subtitle-form" class="subtitle-search">
+            <label>Title<input id="subtitle-query" required placeholder="Movie or series" maxlength="150"></label>
+            <label>Season<input id="subtitle-season" type="number" min="1" max="100" placeholder="—"></label>
+            <label>Episode<input id="subtitle-episode" type="number" min="1" max="2000" placeholder="—"></label>
+            <button class="player-primary" id="subtitle-search-button" type="submit">Search English</button>
+          </form>
+          <div id="subtitle-results"></div>
+        </div>
+      </details>
+      <details id="scene-panel" class="player-disclosure" name="cinema-player-tools">
+        <summary class="player-control">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H5a1 1 0 0 0-1 1v3m12-4h3a1 1 0 0 1 1 1v3m0 8v3a1 1 0 0 1-1 1h-3m-8 0H5a1 1 0 0 1-1-1v-3M9 10h6m-6 4h6"/></svg>
+          Scenes &amp; sound
+        </summary>
+        <div class="player-sheet" role="region" aria-label="Scene tools">
+          <div id="scene-finder"></div>
+          <details id="scene-preview-panel" class="scene-preview" hidden>
+            <summary>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 8 6 4-6 4z"/></svg>
+              <span><strong>Preview a later scene</strong><small>Check a moment ahead while the video downloads</small></span>
+            </summary>
+            <div class="scene-preview-body" role="region" aria-label="Later scene preview">
+              <button type="button" class="player-control scene-preview-return" id="scene-preview-return" hidden>Back</button>
+              <form id="scene-preview-form">
+                <label for="scene-preview-time">Scene time<input id="scene-preview-time" type="text" maxlength="16" placeholder="12:30" autocomplete="off" spellcheck="false"></label>
+                <button type="submit" class="player-control" id="scene-preview-request">Check preview</button>
+                <button type="button" class="player-control" id="scene-preview-close" hidden>Close preview</button>
+              </form>
+              <p id="scene-preview-status" class="scene-preview-status" role="status" aria-live="polite" aria-atomic="true"></p>
+              <div id="scene-preview-card" class="scene-preview-card" hidden>
+                <video id="scene-preview-video" muted playsinline preload="auto" aria-label="Scene preview"></video>
+                <div class="scene-preview-actions">
+                  <button type="button" class="player-control" id="scene-preview-play" disabled>Play preview</button>
+                  <button type="button" class="player-control" id="scene-preview-audio" aria-pressed="false" disabled>Preview sound</button>
+                </div>
+              </div>
+            </div>
+          </details>
+          <details id="sound-map-panel" class="sound-map">
+            <summary>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M3 10v4m4-7v10m5-14v18m5-14v10m4-7v4"/></svg>
+              <span><strong>Sound cues</strong><small>Sounds written in the selected captions</small></span>
+              <svg class="sound-map-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="sound-map-body" role="region" aria-labelledby="sound-map-heading">
+              <div class="sound-map-toolbar">
+                <h3 id="sound-map-heading" tabindex="-1">Cues in this video</h3>
+                <button class="player-control" type="button" id="sound-map-later" aria-pressed="false" hidden>Show later cues</button>
+              </div>
+              <p id="sound-map-status" role="status" aria-live="polite" aria-atomic="true"></p>
+              <p id="sound-map-limited" hidden>The caption scan reached a limit. Some cues may be missing.</p>
+              <button class="player-control" type="button" id="sound-map-subtitles" hidden>Open subtitle settings</button>
+              <nav id="sound-map-pages" class="sound-map-pages" aria-label="Sound cue pages" hidden>
+                <button class="player-control" id="sound-map-previous" type="button">Previous</button>
+                <span id="sound-map-page"></span>
+                <button class="player-control" id="sound-map-next" type="button">Next</button>
+              </nav>
+              <ul id="sound-map-list" class="sound-map-list" aria-label="Sound cues from selected captions" hidden></ul>
+            </div>
+          </details>
+          <details id="scene-sketchbook-panel">
+            <summary>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m5 17 5-5 3 3 2-2 4 4"/><circle cx="15.5" cy="9" r="1"/></svg>
+              <span><strong>Scene Sketchbook</strong><small>Keep a still from a moment you watched</small></span>
+            </summary>
+            <div class="scene-sketchbook-body" role="region" aria-label="Scene Sketchbook">
+              <p id="scene-sketchbook-hint">Pause inside a section you’ve already watched.</p>
+              <button type="button" class="player-control" id="scene-sketchbook-save" aria-describedby="scene-sketchbook-hint" aria-disabled="true">Save this still</button>
+              <p id="scene-sketchbook-status" role="status" aria-live="polite" aria-atomic="true"></p>
+              <div id="scene-sketchbook-gallery" role="group" aria-label="Stills from this viewing session" hidden></div>
+            </div>
+          </details>
+          <section id="scene-relay" class="scene-relay" aria-labelledby="scene-relay-title">
+            <h3 id="scene-relay-title">Scene pins</h3>
+            <p>Keep a moment. With matching dialogue, it can follow you to another release.</p>
+            <div class="scene-pin-form">
+              <label for="scene-pin-label">Name your scene <span>(optional)</span><input id="scene-pin-label" maxlength="75" placeholder="A moment to come back to"></label>
+              <button class="player-primary scene-pin-save" type="button" disabled>Pin this moment</button>
+            </div>
+            <div class="scene-card-actions">
+              <button class="player-control scene-card-import" type="button">Import scene card</button>
+              <input class="scene-card-file" type="file" accept=".json,application/json" hidden>
+              <p>Cards contain the title identity and dialogue fingerprints. Your notes stay on this device.</p>
+            </div>
+            <p class="scene-pin-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            <ul class="scene-pin-list" aria-label="Your scene pins" hidden></ul>
+          </section>
+          <details class="edition-atlas" id="edition-atlas">
+            <summary>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18m-14-12v12m10-12v12"/></svg>
+              <span><strong>Edition Atlas</strong><small>Compare two releases by their dialogue</small></span>
+              <svg class="atlas-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="atlas-body">
+              <p data-atlas-instructions>Save the edition you’re watching, then open a second release of the same title in My Library.</p>
+              <p class="atlas-saved" data-atlas-saved hidden></p>
+              <div class="atlas-actions">
+                <button class="player-primary" type="button" data-atlas-primary>Save this edition</button>
+                <button class="player-control" type="button" data-atlas-clear hidden>Clear saved edition</button>
+              </div>
+              <p class="atlas-status" data-atlas-status role="status" aria-live="polite" aria-atomic="true"></p>
+              <section class="atlas-result" data-atlas-result aria-label="Edition comparison" hidden>
+                <div data-atlas-chart></div>
+                <details class="atlas-timings" data-atlas-timings>
+                  <summary>Show passage timings</summary>
+                  <ol data-atlas-passages></ol>
+                  <nav class="atlas-pages" aria-label="Edition passage pages" hidden>
+                    <button class="player-control" type="button" data-atlas-previous>Previous</button>
+                    <span data-atlas-page role="status"></span>
+                    <button class="player-control" type="button" data-atlas-next>Next</button>
+                  </nav>
+                </details>
+              </section>
+            </div>
+          </details>
+        </div>
+      </details>
+      <details id="warm-switch-panel" class="player-disclosure warm-switch-panel" name="cinema-player-tools" hidden></details>
+      <details id="player-options" class="player-disclosure" name="cinema-player-tools">
+        <summary class="player-control">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="8" cy="7" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+          Options
+        </summary>
+        <div class="player-sheet" role="region" aria-label="Playback options">
+          <h3>Playback options</h3>
+          <div class="player-toolbar">
+            <label>Video<select id="file-select" disabled></select></label>
+            <label>Library category<select id="file-category">
+              <option value="movies">Movies</option>
+              <option value="tv">TV shows</option>
+              <option value="anime">Anime</option>
+              <option value="other">Miscellaneous</option>
+            </select></label>
+          </div>
+          <div class="player-option-actions">
+            <button id="retry-player" class="player-control" type="button">Retry playback</button>
+            <button id="browse-player" class="player-control" type="button">Keep browsing</button>
+          </div>
+          <details id="release-passport" class="release-passport" hidden></details>
+          <details id="player-diagnostics" class="player-diagnostics">
+            <summary>Connection details</summary>
+            <div class="player-progress">
+              <progress aria-label="Playback preparation progress" id="player-progress" max="100" value="0"></progress>
+              <span id="player-progress-label"></span>
+            </div>
+            <span id="playback-mode" class="badge"></span>
+            <div id="player-transfer" class="player-transfer"></div>
+            <p class="muted small" id="player-stream-status"></p>
+            <p class="muted small" id="format-hint"></p>
+            <p class="muted small" id="priority-note"></p>
+            <p id="startup-diagnostic" class="muted small"></p>
+          </details>
+        </div>
+      </details>
+    </div>
+  </div>
+</dialog>
+<dialog id="remove-dialog" aria-labelledby="remove-heading"><form id="remove-form"><div class="dialog-heading"><h2 id="remove-heading">Remove from qBittorrent?</h2><button type="button" class="close" data-close="remove-dialog" aria-label="Cancel removal">×</button></div><p id="remove-title"></p><p class="muted">This removes the torrent from Cinema and qBittorrent.</p><label class="check-label"><input type="checkbox" id="delete-files"> Also permanently delete its downloaded files</label><p class="muted small">Leave this unchecked to keep the files on your PC.</p><div class="dialog-actions"><button class="subtle" type="button" data-close="remove-dialog">Cancel</button><button class="danger" type="submit">Remove torrent</button></div><p id="remove-error" role="alert"></p></form></dialog>
+<dialog id="duplicate-dialog" aria-labelledby="duplicate-heading"><div class="dialog-heading"><h2 id="duplicate-heading">This title is already in your library</h2><button class="close" data-close="duplicate-dialog" aria-label="Close">×</button></div><p class="muted">A different release appears to be downloading or saved. You can open it now, or deliberately keep a second copy.</p><div id="duplicate-options"></div><button id="duplicate-add" class="subtle">Download this alternative too</button></dialog>
+<dialog id="retry-add-dialog" aria-labelledby="retry-add-heading"><div class="dialog-heading"><h2 id="retry-add-heading">Retry this source?</h2><button class="close" data-close="retry-add-dialog" aria-label="Cancel retry">×</button></div><p id="retry-add-title"></p><p class="muted">qBittorrent has not confirmed this source. Check Downloads first. Cinema will check for an existing download again before submitting this same source.</p><div class="dialog-actions"><button class="subtle" data-close="retry-add-dialog">Cancel</button><button id="confirm-retry-add" class="primary">Check and retry</button></div><p id="retry-add-error" role="alert"></p></dialog>
+<dialog id="companion-magnet" aria-labelledby="companion-magnet-title">
+  <form id="companion-magnet-form">
+    <div class="dialog-heading"><h2 id="companion-magnet-title">Add to Scene Preview</h2><button type="button" class="close" data-close="companion-magnet" aria-label="Close Add magnet">×</button></div>
+    <p class="muted" id="companion-magnet-help">Paste a magnet link and follow it in Downloads.</p>
+    <p class="muted small" id="companion-source-help">Supported MP4 downloads can preview later scenes once the video has enough buffer. Other supported videos play as usual.</p>
+    <label for="companion-magnet-input">Magnet link</label>
+    <textarea id="companion-magnet-input" rows="3" maxlength="8192" spellcheck="false" required aria-describedby="companion-magnet-help companion-source-help companion-magnet-status"></textarea>
+    <p id="companion-magnet-status" role="status" aria-atomic="true"></p>
+    <div class="dialog-actions"><button class="subtle" type="button" data-close="companion-magnet">Cancel</button><button class="primary" type="submit">Add download</button></div>
+  </form>
+</dialog>
+<script src="/app.js" type="module"></script></body></html>
+
+
+
+

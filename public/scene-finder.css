@@ -1,0 +1,101 @@
+#scene-finder .scene-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 14px;
+}
+
+#player-dialog #scene-finder .scene-heading h3 { margin: 0 0 4px; }
+
+#scene-finder .scene-heading p,
+#scene-finder .scene-status,
+#scene-finder .scene-pages span {
+  margin: 0;
+  color: var(--player-muted);
+  font-size: .8125rem;
+  line-height: 1.5;
+}
+
+#scene-finder .scene-search label { display: grid; gap: 6px; }
+#scene-finder .scene-search input { width: 100%; }
+#scene-finder .scene-status { margin: 10px 0; }
+
+#player-dialog #scene-finder :is(.scene-replay, .scene-subtitle-link) {
+  border-color: var(--player-line);
+  max-width: 100%;
+  white-space: normal;
+}
+
+#scene-finder .scene-matches {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#scene-finder .scene-result {
+  display: grid;
+  grid-template-columns: minmax(3.25rem, auto) minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 8px 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  border: 1px solid var(--player-line);
+  border-radius: 9px;
+  background: var(--player-ink);
+  color: var(--player-text);
+  font: inherit;
+  font-size: .875rem;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color 140ms, border-color 140ms;
+}
+
+#scene-finder .scene-result:enabled:hover,
+#scene-finder .scene-result:enabled:active {
+  background: var(--player-panel);
+  border-color: var(--player-accent);
+}
+
+#scene-finder :is(button, input):focus-visible {
+  outline: 2px solid var(--player-focus);
+  outline-offset: 2px;
+}
+
+#player-dialog #scene-finder .scene-result:disabled { opacity: 1; cursor: default; }
+#scene-finder .scene-time { font-variant-numeric: tabular-nums; }
+#scene-finder .scene-line { line-height: 1.45; overflow-wrap: anywhere; }
+#scene-finder .scene-action { color: var(--player-accent); font-size: .75rem; font-weight: 650; }
+#scene-finder .scene-action-preview {
+  justify-self: start;
+  padding: 2px 7px;
+  border: 1px solid var(--player-line);
+  border-radius: 999px;
+  background: var(--player-panel);
+  color: var(--player-text);
+}
+#scene-finder .scene-result:disabled .scene-action { color: var(--player-muted); }
+
+#scene-finder .scene-pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  margin-top: 8px;
+}
+
+#scene-finder [hidden] { display: none !important; }
+
+@media (max-width: 420px) {
+  #scene-finder .scene-result { grid-template-columns: minmax(2.5rem, auto) minmax(0, 1fr); }
+  #scene-finder .scene-action { grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #scene-finder .scene-result { transition: none; }
+}
