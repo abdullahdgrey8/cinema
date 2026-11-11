@@ -3,7 +3,11 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start"><strong>Quick start</strong></a> ·
+  <a href="https://github.com/abdullahdgrey8/cinema/releases/latest/download/Cinema-Setup-x64.exe"><img src="https://img.shields.io/badge/Download%20for%20Windows-x64-D93656?style=for-the-badge" alt="Download Cinema Setup for Windows x64"></a>
+</p>
+
+<p align="center">
+  <a href="#install-on-windows"><strong>Install on Windows</strong></a> ·
   <a href="#browse-your-plugins">Browse plugins</a> ·
   <a href="#watch-while-downloading">Playback</a> ·
   <a href="#troubleshooting">Troubleshooting</a>
@@ -17,7 +21,29 @@
 | --- | --- | --- |
 | Browse poster-led shelves, explore installed plugins, and look up seasons and episodes. | Check reported seeders, leechers, size and format. Use **Play best source** or compare releases yourself. | Play from verified downloaded pieces, see which parts of the timeline are ready, and add or adjust subtitles. |
 
-## Quick start
+## Install on Windows
+
+1. [Download Cinema Setup for Windows x64](https://github.com/abdullahdgrey8/cinema/releases/latest/download/Cinema-Setup-x64.exe). Double-click it on a Windows 10 version 1809 or later or a Windows 11 x64 PC, then select **Install**.
+2. Cinema opens in its own window. For later launches, use **Cinema Player** on your desktop or in the Start menu.
+3. Search for **Big Buck Bunny** to try the bundled **Cinema Open Films** source. Open **… → Source plugins** to see it alongside **Cinema Ubuntu Torrents**, which serves official Ubuntu downloads.
+
+Setup includes Node.js, Python, and the two starter search plugins. During installation it downloads and verifies qBittorrent, FFmpeg, and ffprobe and installs Microsoft's WebView2 Runtime if needed. Cinema starts its own qBittorrent instance with a private profile and sets up the connection automatically. Keep an internet connection available during setup. The installer is unsigned, so Windows may show a publisher prompt.
+
+Change where new downloads go under **Settings → Download location**. Setup keeps your private profile outside the program folder at `%LOCALAPPDATA%\Cinema\Installed`, and removing the app through **Settings → Apps** leaves that profile and your downloads in place.
+
+### Build the installer
+
+Run the installer build script from the repository folder in PowerShell on Windows x64.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\desktop\Build-Installer.ps1 -Online
+```
+
+The build verifies pinned dependencies and the Microsoft bootstrapper's signature and prints the SHA-256 of `.local\installer\Cinema-Setup-x64.exe`. The installer records component URLs and hashes in `dependency-provenance.json` and retains the accompanying license notices.
+
+To make a private installer with your own reviewed, stateless qBittorrent search engines, pass `-SearchPluginDirectory` with their folder of `.py` files and a separate `-OutputDirectory`.
+
+## Build from source
 
 ### 1. Install the prerequisites
 
@@ -96,7 +122,7 @@ The regular desktop setup uses stock qBittorrent. The optional Scene Preview com
 
 ## Browse your plugins
 
-1. In qBittorrent, turn on **View → Search Engine**. In the **Search** tab, open **Search plugins** to install and enable the providers you want. [qBittorrent plugin setup guide](https://github.com/qbittorrent/search-plugins/wiki/Install-search-plugins)
+1. The Windows installer includes two starter sources. If you build from source, turn on **View → Search Engine** in qBittorrent and use **Search → Search plugins** to add providers. [qBittorrent plugin setup guide](https://github.com/qbittorrent/search-plugins/wiki/Install-search-plugins)
 2. In Cinema, open **… → Source plugins**. The list shows every installed plugin and its enabled status. Choose **Refresh plugins** after changes in qBittorrent.
 3. Select **Browse plugin** on an enabled provider. Change **Category** and **Popularity period** to explore suggestions without typing a query.
 4. Open a suggestion’s release details to see the reported seeders, leechers, size and available format information. **Search all releases from this plugin** opens the provider’s returned results for that suggestion.
@@ -108,7 +134,8 @@ The Plugin Guide builds suggested searches from charts and topics. Each provider
 
 - **Movies** · Open a title, then choose **Play best source** when Cinema finds a suitable result, or open **Watch options** to compare releases.
 - **Series and anime** · Use **Start watching** for your next episode or **Episodes** to pick one. Cinema can look in season and series packs and verifies the selected episode against the torrent’s file list before automatically opening a file.
-- **Playback map** · Open it in the player to see which parts are ready. A source can start before its full download finishes once the needed opening pieces and format information are available.
+- **Player controls** · Seek within the available parts of the timeline, jump ten seconds, adjust volume, change speed from 0.5× to 2×, or open fullscreen. Picture-in-picture appears where the browser engine supports it.
+- **Playback map** · Open it in the player to inspect which parts are ready. A source can start before its full download finishes once the needed opening pieces and format information are available.
 - **Subtitles** · Open **Subtitles** in the player to search available English captions, import SRT, VTT, ASS or SSA, and adjust the timing.
 - **Storage** · Open **Settings → Download location** to choose where new downloads go. **Playback cache** manages prepared copies separately. Closing the player lets qBittorrent continue its transfer.
 
@@ -118,7 +145,8 @@ Compatible files can play directly. Other formats can use prepared HLS segments.
 
 | Symptom | What to check |
 | --- | --- |
-| Cinema says qBittorrent is offline | Open qBittorrent, confirm that its Web UI is enabled, and check the exact address and credentials in Cinema. |
+| Installed Cinema says the downloader is offline | Retry from the startup screen. If a bundled component is missing, run `Cinema-Setup-x64.exe` again. |
+| Source build says qBittorrent is offline | Open qBittorrent, confirm that its Web UI is enabled, and check the exact address and credentials in Cinema. |
 | Sources is empty or a plugin returns no results | Check Python and the plugin’s enabled state in qBittorrent. Try the same title in qBittorrent’s Search tab, then use **Refresh plugins** in Cinema. |
 | A title appears without a playable source | Browse **Watch options** or search for another release. Catalog entries and torrent availability are separate. |
 | A download has progress but the player is still preparing | Open **Playback map** and check the opening buffer. The total download percentage can be ahead of the pieces the player needs. |
@@ -127,7 +155,7 @@ Compatible files can play directly. Other formats can use prepared HLS segments.
 
 ## Project notes
 
-Cinema binds its service to loopback. The qBittorrent connection and prepared files are stored locally under `.local/`. Cinema queries the configured providers for search, metadata, artwork and subtitles.
+Cinema binds its service to loopback. Installed copies keep their data under `%LOCALAPPDATA%\Cinema\Installed`. Source builds keep the qBittorrent connection and prepared files under `.local/`. Cinema queries the configured providers for search, metadata, artwork and subtitles.
 
 The app is built with Node.js, the qBittorrent Web API, FFmpeg, hls.js and a Windows WebView2 host. The tests use isolated profiles and synthetic media.
 

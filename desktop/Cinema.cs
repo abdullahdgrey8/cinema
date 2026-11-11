@@ -18,6 +18,7 @@ using Microsoft.Web.WebView2.WinForms;
 internal sealed partial class CinemaWindow : Form
 {
     private const int CinemaPort = 3210;
+    private const int InstalledCinemaPort = 3211;
     private const int SceneCompanionPort = 3212;
     private const string CompanionStartupIdentity = @"Local\CinemaDesktop.SceneCompanion.Startup";
     private static readonly Regex FolderPickerRequest = new Regex(
@@ -25,6 +26,7 @@ internal sealed partial class CinemaWindow : Form
     private readonly string origin;
     private readonly string root;
     private readonly string companionRoot;
+    private readonly bool installed;
     private readonly Panel startup = new Panel { Dock = DockStyle.Fill };
     private readonly Label status = new Label { AutoSize = true };
     private readonly Button retry = new Button { Text = "Retry", AutoSize = true, Visible = false };
@@ -57,15 +59,16 @@ internal sealed partial class CinemaWindow : Form
         if (RunFixture(args)) return;
 #endif
         bool companionMode = args.Length == 3 && args[1] == "--scene-companion";
+        bool installedMode = args.Length == 2 && args[1] == "--installed";
         string companionRoot = companionMode ? LocalAbsoluteDirectory(args[2]) : null;
-        if ((args.Length != 1 && companionRoot == null) || !File.Exists(Path.Combine(args[0], "launch-cinema.mjs")))
+        if ((args.Length != 1 && !installedMode && companionRoot == null) || !File.Exists(Path.Combine(args[0], "launch-cinema.mjs")))
         {
             MessageBox.Show(companionMode ? "Choose a Scene Preview profile directly under CinemaData in your Windows profile." :
                 "Launch Cinema from its desktop shortcut.", companionMode ? "Cinema Scene Preview" : "Cinema");
             return;
         }
 
-        string identity = @"Local\CinemaDesktop";
+        string identity = installedMode ? @"Local\CinemaDesktop.Installed" : @"Local\CinemaDesktop";
         if (companionRoot != null)
         {
             using (var sha = SHA256.Create())
@@ -77,7 +80,7 @@ internal sealed partial class CinemaWindow : Form
         using (var instance = new Mutex(true, identity + ".Instance", out first))
         {
             if (!first) { activation.Set(); return; }
-            using (var window = new CinemaWindow(args[0], activation, companionRoot))
+            using (var window = new CinemaWindow(args[0], activation, companionRoot, installedMode))
                 Application.Run(window);
         }
     }
@@ -101,11 +104,13 @@ internal sealed partial class CinemaWindow : Form
         catch (PathTooLongException) { return null; }
     }
 
-    private CinemaWindow(string root, EventWaitHandle activation, string companionRoot = null)
+    private CinemaWindow(string root, EventWaitHandle activation, string companionRoot = null, bool installed = false)
     {
         this.root = root;
         this.companionRoot = companionRoot;
-        origin = "http://127.0.0.1:" + (companionRoot == null ? CinemaPort : SceneCompanionPort);
+        this.installed = installed;
+        int port = installed ? InstalledCinemaPort : companionRoot == null ? CinemaPort : SceneCompanionPort;
+        origin = "http://127.0.0.1:" + port;
         Text = companionRoot == null ? "Cinema" : "Cinema Scene Preview";
         Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         StartPosition = FormStartPosition.CenterScreen;
@@ -143,7 +148,8 @@ internal sealed partial class CinemaWindow : Form
     private async Task StartAsync()
     {
         retry.Visible = false;
-        status.Text = companionRoot == null ? "Starting Cinema and connecting to qBittorrent..." : "Opening your Scene Preview library...";
+        status.Text = installed ? "Starting Cinema and checking your search plugins…" :
+            companionRoot == null ? "Starting Cinema and connecting to qBittorrent..." : "Opening your Scene Preview library...";
         try
         {
             Task service = Task.FromResult(true);
@@ -151,7 +157,7 @@ internal sealed partial class CinemaWindow : Form
             if (fixtureDirectory == null)
 #endif
                 service = companionRoot == null ? EnsureServiceAsync() : EnsureCompanionServiceAsync();
-            if (companionRoot != null)
+            if (installed || companionRoot != null)
             {
                 await service;
                 if (IsDisposed) return;
@@ -240,9 +246,12 @@ internal sealed partial class CinemaWindow : Form
 
     private async Task EnsureServiceAsync()
     {
-        string node = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "nodejs", "node.exe");
-        if (!File.Exists(node)) throw new InvalidOperationException("Cinema needs Node.js 22 or later.");
+        string node = installed ? Path.Combine(root, "runtime", "node.exe") :
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "nodejs", "node.exe");
+        if (!File.Exists(node)) throw new InvalidOperationException(installed ?
+            "The bundled runtime is missing. Run Cinema Setup again." : "Cinema needs Node.js 22 or later.");
         string arguments = "launch-cinema.mjs --services-only";
+        if (installed) arguments += " --installed";
         if (companionRoot != null) arguments += " --scene-companion \"" + companionRoot + "\"";
         var start = new ProcessStartInfo(node, arguments) {
             WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true,
@@ -259,6 +268,14 @@ internal sealed partial class CinemaWindow : Form
     private async Task InitializeViewAsync()
     {
         string profile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cinema", "WebView");
+        if (installed)
+        {
+            string data = Environment.GetEnvironmentVariable("CINEMA_INSTALL_DATA_DIR");
+            if (String.IsNullOrEmpty(data))
+                data = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Cinema", "Installed");
+            profile = Path.Combine(Path.GetFullPath(data), "webview");
+            Environment.SetEnvironmentVariable("WEBVIEW2_USER_DATA_FOLDER", profile, EnvironmentVariableTarget.Process);
+        }
         if (companionRoot != null)
         {
             string appData = Path.Combine(companionRoot, "app-data");
@@ -272,8 +289,8 @@ internal sealed partial class CinemaWindow : Form
         if (fixtureDirectory != null) profile = Path.Combine(fixtureDirectory, "webview");
 #endif
         var environment = await CoreWebView2Environment.CreateAsync(null, profile);
-        if (companionRoot != null && !String.Equals(profile, environment.UserDataFolder.TrimEnd('\\', '/'), StringComparison.OrdinalIgnoreCase))
-            throw new InvalidOperationException("The Scene Preview window could not use its separate profile.");
+        if ((installed || companionRoot != null) && !String.Equals(profile, environment.UserDataFolder.TrimEnd('\\', '/'), StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("Cinema could not open its configured desktop profile.");
         await view.EnsureCoreWebView2Async(environment);
         var core = view.CoreWebView2;
         core.Settings.AreDevToolsEnabled = false;

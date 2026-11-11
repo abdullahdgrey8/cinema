@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { launchManagedCompanion } from './companion-launcher.mjs';
 import { loadManagedCompanion } from './managed-companion.mjs';
+import { launchInstalledCinema } from './installed-cinema.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const local = new URL('.local/', import.meta.url);
@@ -79,8 +80,13 @@ async function launchOrdinary(servicesOnly) {
 }
 
 try {
-  const { values } = parseArgs({ options: { 'services-only': { type: 'boolean' }, 'scene-companion': { type: 'string' } } });
-  if (values['scene-companion'] !== undefined) {
+  const { values } = parseArgs({ options: {
+    'services-only': { type: 'boolean' }, 'scene-companion': { type: 'string' }, installed: { type: 'boolean' },
+  } });
+  if (values.installed) {
+    if (!values['services-only'] || values['scene-companion'] !== undefined) throw Error('Open the installed Cinema desktop app.');
+    await launchInstalledCinema(root, start);
+  } else if (values['scene-companion'] !== undefined) {
     if (!values['services-only']) throw Error('Open Scene Preview from its desktop shortcut.');
     const profile = await loadManagedCompanion(values['scene-companion']);
     await launchManagedCompanion(profile, start);

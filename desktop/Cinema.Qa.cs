@@ -23,7 +23,8 @@ internal sealed partial class CinemaWindow
         Uri url;
         if (args.Length != 3 || !Uri.TryCreate(args[1], UriKind.Absolute, out url) ||
             url.Scheme != "http" || url.Host != "127.0.0.1" || url.Port < 1024 ||
-            url.Port == CinemaPort || url.Port == SceneCompanionPort || url.PathAndQuery != "/" || url.UserInfo.Length != 0 ||
+            url.Port == CinemaPort || url.Port == InstalledCinemaPort || url.Port == SceneCompanionPort ||
+            url.PathAndQuery != "/" || url.UserInfo.Length != 0 ||
             !Directory.Exists(args[2]))
             throw new ArgumentException("QA needs an isolated loopback service and a fixture directory.");
         using (var activation = new EventWaitHandle(false, EventResetMode.AutoReset))

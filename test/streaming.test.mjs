@@ -76,9 +76,10 @@ test('internal converter streams survive the normal piece timeout and transient 
   offline=false;state=[2,2,2];assert.equal(await tail,'cdef');assert.equal(failed,null);
 });
 
-for(const faststart of [true,false])test(`partial MP4 starts with ${faststart?'opening':'trailing'} movie index and most video pieces missing`,async t=>{
+for(const {faststart,mp3=false} of [{faststart:true},{faststart:false},{faststart:true,mp3:true}])
+test(`partial MP4 starts with ${faststart?'opening':'trailing'} movie index, ${mp3?'MP3':'AAC'} audio, and most video pieces missing`,async t=>{
   const c=await cinema(t),name='partial-fixture.mp4';
-  const encoded=spawn(ffmpeg,['-hide_banner','-loglevel','error','-f','lavfi','-i','testsrc2=s=320x180:r=25:d=80','-f','lavfi','-i','sine=frequency=440:duration=80','-c:v','libx264','-preset','ultrafast','-g','100','-b:v','1M','-c:a','aac',...(faststart?['-movflags','+faststart']:[]),'-shortest',path.join(c.dir,name)],{windowsHide:true,stdio:'ignore'});
+  const encoded=spawn(ffmpeg,['-hide_banner','-loglevel','error','-f','lavfi','-i','testsrc2=s=320x180:r=25:d=80','-f','lavfi','-i','sine=frequency=440:duration=80','-c:v','libx264','-preset','ultrafast','-g','100','-b:v','1M','-c:a',mp3?'libmp3lame':'aac',...(faststart?['-movflags','+faststart']:[]),'-shortest',path.join(c.dir,name)],{windowsHide:true,stdio:'ignore'});
   assert.equal((await once(encoded,'close'))[0],0);
   const data=await fs.readFile(path.join(c.dir,name)),size=data.length,pieceSize=65536,count=Math.ceil(size/pieceSize),have=Math.ceil(count*.25);
   let offset=0,moov;
@@ -97,7 +98,12 @@ for(const faststart of [true,false])test(`partial MP4 starts with ${faststart?'o
     for(let i=Math.floor(moov.start/pieceSize);i<=Math.floor((moov.end-1)/pieceSize);i++)c.state.pieces[i]=2;
   }
   const ready=await until(async()=>{const p=await c.api(`/api/playback?hash=${HASH}&index=0`);assert.notEqual(p.status,'error',JSON.stringify(p));return p.status==='ready'&&p;},{timeout:18000,interval:200,description:`partial MP4 ${faststart?'faststart':'trailing index'} to become playable`});
-  assert.equal(ready.mode,'direct');assert.ok(ready.duration>70);assert.ok(c.state.pieces.includes(0));
+  assert.equal(ready.mode,mp3?'hls':'direct');assert.ok(ready.duration>70);assert.ok(c.state.pieces.includes(0));
+  if(mp3){
+    const manifest=await (await c.request(ready.url)).text();
+    assert.match(manifest,/#EXTINF:/);assert.doesNotMatch(manifest,/#EXT-X-ENDLIST/);
+    return;
+  }
   // Browser compatibility fallback must also publish segments before download completes.
   await c.api('/api/prepare',{hash:HASH,index:0,forceTranscode:true});
   const hls=await until(async()=>{const p=await c.api(`/api/playback?hash=${HASH}&index=0`);assert.notEqual(p.status,'error',JSON.stringify(p));return p.status==='ready'&&p.mode==='hls'&&p;},{timeout:18000,interval:200,description:'partial MP4 HLS fallback'});

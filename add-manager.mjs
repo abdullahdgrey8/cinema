@@ -4,6 +4,19 @@ import {randomBytes} from 'node:crypto';
 import {classify,magnetHashes,torrentIdentity,titleKey,title} from './lib.mjs';
 import {verifyDownloadFolder} from './download-location.mjs';
 
+const starterFilmDescriptors=new Set([
+  'https://webtorrent.io/torrents/big-buck-bunny.torrent',
+  'https://webtorrent.io/torrents/sintel.torrent',
+  'https://webtorrent.io/torrents/tears-of-steel.torrent',
+  'https://webtorrent.io/torrents/cosmos-laundromat.torrent',
+  'https://archive.org/download/167622/167622_archive.torrent',
+]);
+const ubuntuTrackerDescriptor=/^https:\/\/torrent\.ubuntu\.com\/file\?info_hash=(?:[A-Za-z\d._~-]|%[A-Fa-f\d]{2}){20}$/;
+function useNativeDownloader({engineName,fileUrl}){
+  if(engineName==='cinema_open_films')return starterFilmDescriptors.has(fileUrl);
+  return engineName==='cinema_ubuntu'&&fileUrl===fileUrl.trim()&&ubuntuTrackerDescriptor.test(fileUrl);
+}
+
 export async function createAddManager({qb,local,onChange=()=>{},downloadFolder=()=>null}){
   const filename=path.join(local,'operations.json');
   const stored=await fs.readFile(filename,'utf8').then(JSON.parse).catch(()=>[]);
@@ -30,7 +43,9 @@ export async function createAddManager({qb,local,onChange=()=>{},downloadFolder=
         const savepath=folder.endsWith(path.sep)?folder:folder+path.sep;
         Object.assign(args,{savepath,autoTMM:'false',useDownloadPath:'false'});
       }
-      if(o.source.engineName&&!o.source.fileUrl.startsWith('magnet:'))args.downloader=o.source.engineName;
+      // The bundled engines publish plain torrent descriptors. Using qBittorrent's
+      // native downloader also avoids Nova's space-delimited temporary path protocol.
+      if(o.source.engineName&&!o.source.fileUrl.startsWith('magnet:')&&!useNativeDownloader(o.source))args.downloader=o.source.engineName;
       const beforeSend=folder===undefined?undefined:()=>verifyDownloadFolder(folder,{unchanged:true});
       submitted=true;
       const result=await qb('torrents/add',args,'POST',beforeSend);

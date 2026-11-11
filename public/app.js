@@ -58,6 +58,7 @@ const supported = (p,category) => p.enabled && (category==='all'||category==='mi
 const categoryName = category => names[category]||category;
 let token='',view='home',library=[],plugins=[],operations=[],connected=false,refreshPromise=null,stateTimer=null;
 let companionUI;
+let videoControls;
 function companionAdded(operation){
   if(operation.id&&!operation.existing){
     awaitingOperations.add(operation.id);
@@ -965,7 +966,7 @@ function stopPlayback({cancelPending=true,preserveWarm=false}={}){
   saveProgress();playGeneration++;clearTimeout(watchTimer);active=null;destroyMedia();
   rescueSearch=null;rescueFlow.close();fastStartFlow.clear();$('#rescue-reopen').hidden=true;
   if(!preserveWarm)warmFlow.clear();
-  $('#video').controls=true;
+  $('#video').controls=!videoControls;
   $('#resume-choice').hidden=true;$('#startup-diagnostic').textContent='';$('#alternate-source').hidden=true;
   $('#player-dock').hidden=true;$('#player-dialog').close();document.body.classList.remove('has-player');
   renderContinueWatching();
@@ -1087,7 +1088,7 @@ function renderWatchedPlayer(){
   const target=active?.watchedTarget,video=$('#video');
   $('#watched-jump').hidden=!target;
   $('#player-dialog').classList.toggle('watched-holding-frame',Boolean(target));
-  const controls=!target&&!active?.resumePending;
+  const controls=!videoControls&&!target&&!active?.resumePending;
   if(video.controls!==controls)video.controls=controls;
   $('#watched-player-recap').hidden=Boolean(target)||!watched.canCatchUp(watchedRecapTarget());
   if(!target)return;
@@ -1545,6 +1546,7 @@ function schedulePlaybackMap(){
     const previewSource=scenePreviewContext();
     scenePreview.refresh(previewSource);
     playbackTimeline.update({...map,marks,attachmentKey:scenePreview.attachmentKey(previewSource)});renderWatchedPlayer();
+    videoControls?.update();
     renderPlaybackInsights(map);
     editionAtlas.refresh(time=>!map.blocked&&readyToSeek(map,time));
     rescueFlow.refresh();
@@ -1562,7 +1564,7 @@ function renderResumeChoice(){
   schedulePlaybackMap();
   const shown=Boolean(active?.resumePending);
   $('#resume-choice').hidden=!shown;
-  $('#video').controls=!shown&&!active?.watchedTarget;
+  $('#video').controls=!videoControls&&!shown&&!active?.watchedTarget;
   if(!shown)return;
   active.releaseObservation?.excludeStart();
   const ready=resumeAvailable(),time=clockTime(active.resumeTarget);
@@ -2165,6 +2167,7 @@ $('#player-dialog').addEventListener('cancel',event=>{
   event.preventDefault();
   if(scenePreview.escape())return;
   if(!$('#watched-player-catch-up').hidden){watchedUI.closePlayer({restoreFocus:true});return;}
+  if(videoControls?.closeMenus())return;
   const sounds=$('#sound-map-panel'),studio=$('#two-track-panel'),sketchbook=$('#scene-sketchbook-panel');
   const sceneTools=$('#scene-panel').open?[sketchbook,sounds].filter(panel=>panel.open):[];
   const nested=$('#subtitle-panel').open&&studio.open?studio:
@@ -2296,6 +2299,15 @@ async function verifyFollowCaption(id,signal){
   return true;
 }
 async function startApplication(){
+  void import('./player-controls.js').then(({createVideoControls})=>{
+    videoControls=createVideoControls({
+      video:$('#video'),controls:$('#video-controls'),panels:[$('#audio-panel'),$('#subtitle-panel')],
+      getPlayback:()=>({map:mapForActive(),key:active?.watchedAttachment||active?.url,
+        visible:Boolean(active?.url&&!active.watchedTarget&&!active.resumePending&&$('#player-placeholder').hidden)}),
+      seek:seekScene,clockTime,onInteract:cancelSourceMemory,
+    });
+    schedulePlaybackMap();
+  }).catch(error=>console.warn('Cinema video controls could not load.',error));
   const openTitle=item=>discoveryUI.openItem(item);
   followStore=createFollowStore(localStorage);
   followWeek=createFollowWeekUI({
@@ -2351,6 +2363,17 @@ async function startApplication(){
       const {createCompanionUI}=await import('./companion-ui.js');
       companionUI=createCompanionUI({request:magnet=>api('/api/companion/magnet',{magnet}),onAdded:companionAdded});
       companionUI.enable();renderLibrary();
+    }
+    if(session.profile==='installed'){
+      const {enableInstalledUI}=await import('./installed-ui.js');
+      enableInstalledUI({onSearch:async query=>{
+        try{
+          if(!plugins.some(p=>p.name==='cinema_open_films'&&p.enabled))acceptPluginList(await api('/api/plugins'));
+          if(!selectPlugin('cinema_open_films','movies'))return;
+          $('#query').value=query;
+          $('#search-form').requestSubmit();
+        }catch(e){notice(e.message);}
+      }});
     }
     $('#connection-form').elements.url.value=session.url;
     $('#connection-form').elements.username.value=session.username;

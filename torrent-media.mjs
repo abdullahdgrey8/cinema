@@ -376,6 +376,7 @@ export function createMedia({qb, rawQb, sceneReader, sceneEpoch=()=>null, local,
     let handle;
     try {
       handle=await fsp.open(await resolvePath(item),'r');
+      let sawMedia=false;
       for(let at=0,boxes=0;at+8<=item.f.size&&boxes++<1000;) {
         const headerState=availability(at,8);if(!headerState.ready)return headerState;
         const header=Buffer.alloc(16),result=await handle.read(header,0,Math.min(16,item.f.size-at),at);
@@ -384,8 +385,9 @@ export function createMedia({qb, rawQb, sceneReader, sceneEpoch=()=>null, local,
         if(size===1){const wideHeader=availability(at,16);if(!wideHeader.ready)return wideHeader;const n=header.readBigUInt64BE(8);if(n>BigInt(Number.MAX_SAFE_INTEGER))return {ready:true};size=Number(n);}
         if(!size)size=item.f.size-at;
         if(size<8||at+size>item.f.size)return {ready:true}; // Let ffprobe diagnose malformed or non-ISO containers.
-        if(kind==='moov')return availability(at,size);
+        if(kind==='moov')return {...availability(at,size),openingIndex:!sawMedia};
         if(kind==='moof')return {ready:true};
+        if(kind==='mdat')sawMedia=true;
         at+=size;
       }
       return {ready:true};
@@ -648,8 +650,10 @@ export function createMedia({qb, rawQb, sceneReader, sceneEpoch=()=>null, local,
     // offsets on seekable input. Those optional tail reads can block startup
     // until the download finishes. Its streaming path skips these seeks.
     // AVI similarly loads its tail idx1 whenever the input is seekable.
-    // MP4 must remain seekable: a trailing moov atom is essential metadata.
-    const progressive=session.item?.f.progress<1&&/\.(mkv|webm|avi|ts|m2ts|mpg|mpeg|ogv)$/i.test(session.item?.f.name||'');
+    // A verified opening moov also works on a forward-only input. Keep seeks
+    // for MP4s whose essential movie index comes after the media.
+    const progressive=session.item?.f.progress<1&&(
+      session.header?.openingIndex||/\.(mkv|webm|avi|ts|m2ts|mpg|mpeg|ogv)$/i.test(session.item?.f.name||''));
     return [...(progressive?['-seekable','0']:[]),'-analyzeduration','1000000','-probesize',String(STARTUP_BYTES)];
   }
   function runProbe(session,{signal,timeoutMs=20000,localInput=null}={}) {
@@ -775,7 +779,10 @@ export function createMedia({qb, rawQb, sceneReader, sceneEpoch=()=>null, local,
 
   function directCompatible(item,probe) {
     const video=probe.streams.find(s=>s.codec_type==='video');const audio=probe.streams.find(s=>s.codec_type==='audio');
-    if(/\.(mp4|m4v)$/i.test(item.f.name))return video.codec_name==='h264'&&['yuv420p','yuvj420p'].includes(video.pix_fmt||'yuv420p')&&(!audio||['aac','mp3'].includes(audio.codec_name));
+    // Chromium can request the end of an MP4 with MP3 audio before its
+    // first frame. While it is growing, remux H.264 and encode only the audio.
+    if(/\.(mp4|m4v)$/i.test(item.f.name))return video.codec_name==='h264'&&['yuv420p','yuvj420p'].includes(video.pix_fmt||'yuv420p')&&
+      (!audio||audio.codec_name==='aac'||(audio.codec_name==='mp3'&&item.f.progress>=1));
     if(/\.webm$/i.test(item.f.name))return ['vp8','vp9','av1'].includes(video.codec_name)&&(!audio||['opus','vorbis'].includes(audio.codec_name));
     return false;
   }

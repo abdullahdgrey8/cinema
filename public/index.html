@@ -129,6 +129,18 @@
   <button id="dock-warm-return" class="player-control" type="button" hidden></button>
 </section>
 <dialog id="episodes-dialog" aria-labelledby="episodes-title"><div class="dialog-heading"><div><span class="eyebrow">PICK UP THE STORY</span><h2 id="episodes-title">Episodes & seasons</h2></div><div class="week-episode-header-actions"><button id="episodes-follow" type="button" class="subtle" aria-pressed="false" hidden><span>Follow</span></button><button type="button" class="close" data-close="episodes-dialog" aria-label="Close episodes">×</button></div></div><div id="episodes-summary" class="episodes-summary"></div><p id="episodes-status" class="muted" role="status" aria-live="polite"></p><p id="episodes-warning" class="inline-warning" hidden></p><div id="episodes-toolbar" class="episodes-toolbar" hidden><label>Season<select id="episodes-season" aria-label="Choose a season"></select></label><div class="episode-list-filters"><label class="check-label"><input id="episodes-aired-only" type="checkbox"> Aired episodes only</label><label>Find an episode<input id="episodes-filter" placeholder="Episode name or number…" aria-label="Filter episodes"></label></div></div><div id="episodes-list" class="episodes-list"></div><nav id="episodes-pagination" class="episode-pagination" aria-label="Episode pages" hidden><button id="episodes-page-previous" class="subtle" type="button" aria-label="Previous episode page">← Previous</button><span id="episodes-page-label"></span><button id="episodes-page-next" class="subtle" type="button" aria-label="Next episode page">Next →</button></nav><section id="episode-sources" class="episode-sources" hidden aria-labelledby="episode-sources-title"><div class="section-heading"><div><span class="eyebrow">FOR YOUR SELECTED EPISODE</span><h3 id="episode-sources-title" tabindex="-1"></h3></div><button class="subtle" id="episode-cancel-search" type="button">Cancel search</button></div><p id="episode-source-status" class="muted" role="status" aria-live="polite"></p><div id="episode-source-list"></div><button class="subtle" id="episode-retry-search" type="button" hidden>Search sources again</button></section><div class="episodes-footer"><a id="episodes-attribution" target="_blank" rel="noopener noreferrer" hidden>Episode information from TVmaze ↗</a><button class="subtle" id="episodes-retry-catalog" type="button" hidden>Retry episode list</button><span class="muted small">Episode metadata and torrent availability are checked separately.</span></div></dialog><dialog id="title-detail-dialog" aria-labelledby="title-detail-title"><div class="dialog-heading"><h2 id="title-detail-title"></h2><button class="close" data-close="title-detail-dialog" aria-label="Close title details">×</button></div><div id="title-detail-body"></div></dialog><dialog id="settings" aria-labelledby="settings-title"><form id="connection-form"><div class="dialog-heading"><h2 id="settings-title">Settings</h2><button type="button" class="close" data-close="settings" aria-label="Close settings">×</button></div><h3>qBittorrent connection</h3><p class="muted">Connect to qBittorrent running on this PC.</p><label>Web UI address<input name="url" required value="http://127.0.0.1:8080"></label><label>Username<input name="username" required value="admin" autocomplete="username"></label><label>Password<input name="password" type="password" autocomplete="current-password" placeholder="Your Web UI password"></label><p class="muted small">Credentials are saved locally on this PC and excluded from Git.</p><button class="primary" type="submit">Connect to qBittorrent →</button><p id="connection-error" role="alert"></p></form>
+<section id="installed-connection" aria-labelledby="installed-connection-title" hidden>
+  <h3 id="installed-connection-title">Search plugins</h3>
+  <p class="muted">Cinema Setup includes Open Films and Ubuntu Torrents and connects to its own qBittorrent profile.</p>
+  <p class="muted">To add a plugin, open Cinema’s qBittorrent from the Windows notification area. Enable <strong>View → Search Engine</strong>, then choose <strong>Search plugins → Install a new one</strong> on the Search tab. Refresh the plugin list in Cinema when you’re done.</p>
+  <button class="subtle" type="button" data-view="sources" data-close="settings">View installed plugins</button>
+  <template id="installed-search-examples">
+    <div class="chips" role="group" aria-label="Open film searches" style="margin-block-start:8px">
+      <button class="subtle" type="button" data-starter-query="Big Buck Bunny" style="min-height:44px">Try Big Buck Bunny</button>
+      <button class="subtle" type="button" data-starter-query="open films" style="min-height:44px">Browse open films</button>
+    </div>
+  </template>
+</section>
 <section class="download-location-settings" id="download-location-settings" aria-labelledby="download-location-title" hidden>
   <h3 id="download-location-title">Download location</h3>
   <p class="muted">Choose where Cinema saves new downloads. Existing files stay in their folders.</p>
@@ -194,6 +206,51 @@
 
   <div class="video-stage">
     <video id="video" controls playsinline preload="auto" aria-labelledby="player-title"></video>
+    <div id="video-controls" class="video-controls" role="group" aria-label="Video controls" hidden>
+      <div class="video-seek">
+        <div class="video-seek-rail" aria-hidden="true"><div data-video-buffer></div><div data-video-progress></div></div>
+        <input data-video-seek type="range" min="0" max="1" value="0" step="0.1" aria-label="Playback position">
+      </div>
+      <div class="video-controls-row">
+        <button data-video-toggle type="button" title="Play (K)" aria-label="Play">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path data-video-play d="M7 4.5 20 12 7 19.5Z" class="video-icon-solid"/><path data-video-pause d="M6 5h4v14H6zm8 0h4v14h-4z" class="video-icon-solid" hidden/></svg>
+        </button>
+        <button data-video-skip="-10" type="button" title="Back 10 seconds (Left arrow)" aria-label="Back 10 seconds">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4 4 8l4 4M5 8h10a5 5 0 0 1 0 10h-2"/><path d="M7 15h1v4"/></svg>
+        </button>
+        <button data-video-skip="10" type="button" title="Forward 10 seconds (Right arrow)" aria-label="Forward 10 seconds">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 4 4 4-4 4m3-4H9a5 5 0 0 0 0 10h2"/><path d="M15 15h1v4"/></svg>
+        </button>
+        <div class="video-volume">
+          <button data-video-mute type="button" title="Mute (M)" aria-label="Mute">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z"/><path data-video-unmuted d="M16 9a4 4 0 0 1 0 6m3-9a8 8 0 0 1 0 12"/><path data-video-muted d="m16 10 4 4m0-4-4 4" hidden/></svg>
+          </button>
+          <input data-video-volume type="range" min="0" max="1" step="0.05" value="1" aria-label="Volume">
+        </div>
+        <span class="video-timestamp" data-video-time aria-hidden="true">0:00</span>
+        <div class="video-controls-end">
+          <div class="video-track-controls"></div>
+          <details data-video-speed class="player-disclosure" name="cinema-player-tools">
+            <summary class="player-control" title="Playback speed" aria-label="Playback speed"><span data-video-rate>1×</span></summary>
+            <div class="player-sheet video-speed-sheet" role="region" aria-label="Playback speed">
+              <h3>Playback speed</h3>
+              <div class="video-speed-options" role="group" aria-label="Select playback speed">
+                <button type="button" data-rate="0.5">0.5×</button><button type="button" data-rate="0.75">0.75×</button>
+                <button type="button" data-rate="1" aria-pressed="true">Normal</button>
+                <button type="button" data-rate="1.25">1.25×</button><button type="button" data-rate="1.5">1.5×</button><button type="button" data-rate="2">2×</button>
+              </div>
+            </div>
+          </details>
+          <button data-video-pip type="button" title="Picture in picture" aria-label="Picture in picture" aria-pressed="false" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M13 12h5v4h-5z" class="video-icon-solid"/></svg>
+          </button>
+          <button data-video-fullscreen type="button" title="Fullscreen (F)" aria-label="Fullscreen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path data-video-expand d="M9 4H4v5m11-5h5v5m-5 11h5v-5M9 20H4v-5"/><path data-video-collapse d="M4 9h5V4m11 5h-5V4m5 11h-5v5M4 15h5v5" hidden/></svg>
+          </button>
+        </div>
+      </div>
+      <p class="video-control-feedback" data-video-message role="status" hidden></p>
+    </div>
     <div id="player-placeholder" data-opening-step="files">
       <img id="player-opening-art" alt="" aria-hidden="true" decoding="async" hidden>
       <div class="player-preparing-icon" aria-hidden="true">
@@ -299,7 +356,7 @@
       <details id="audio-panel" class="player-disclosure" name="cinema-player-tools" hidden>
         <summary class="player-control">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9a4 4 0 0 1 0 6m3-8a7 7 0 0 1 0 10"/></svg>
-          Audio
+          <span class="video-track-label">Audio</span>
         </summary>
         <div class="player-sheet player-audio-sheet" role="region" aria-labelledby="player-audio-title">
           <h3 id="player-audio-title">Audio</h3>
@@ -317,7 +374,7 @@
       <details id="subtitle-panel" class="subtitle-panel player-disclosure" name="cinema-player-tools">
         <summary class="player-control">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 11h3m4 0h3m-10 3h2m3 0h5"/></svg>
-          Subtitles
+          <span class="video-track-label">Subtitles</span>
         </summary>
         <div class="player-sheet" role="region" aria-label="Subtitle settings">
           <h3>Subtitles</h3>

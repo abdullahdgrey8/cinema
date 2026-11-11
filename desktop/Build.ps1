@@ -1,11 +1,13 @@
-param([switch]$Qa)
+param([switch]$Qa, [string]$OutputDirectory)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $version = '1.0.4314.35'
 $cache = Join-Path $env:LOCALAPPDATA "Cinema\DesktopBuild\$version"
 $sdk = Join-Path $cache 'sdk'
 $lib = Join-Path $sdk 'lib\net462'
-$install = Join-Path $root $(if ($Qa) { '.local\desktop-qa' } else { '.local\desktop' })
+$install = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else {
+    Join-Path $root $(if ($Qa) { '.local\desktop-qa' } else { '.local\desktop' })
+}
 $compiler = Join-Path $env:SystemRoot 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 if (-not (Test-Path (Join-Path $lib 'Microsoft.Web.WebView2.WinForms.dll'))) {
     New-Item -ItemType Directory -Path $cache -Force | Out-Null

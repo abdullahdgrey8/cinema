@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {randomBytes,createHash} from 'node:crypto';
 import {classify,title,pluginGroups,statusLabel,torrentIdentity,magnetHashes,validReleaseLink,nonVideoRelease} from './lib.mjs';
 import {createQbit} from './qbit-client.mjs';
+import {installedCinemaProof} from './installed-cinema.mjs';
 import {loadManagedCompanion,MANAGED_CINEMA_PORT,managedLaunchProof,managedMagnetSource,managedStorageMatches,
   managedTorrentStorageMatches} from './managed-companion.mjs';
 import {createAddManager} from './add-manager.mjs';
@@ -24,6 +25,8 @@ import {portableSceneIdentity} from './public/scene-relay.js';
 
 const root=path.dirname(fileURLToPath(import.meta.url));
 const managed=process.env.CINEMA_MANAGED_SCENE_ROOT===undefined?null:await loadManagedCompanion(process.env.CINEMA_MANAGED_SCENE_ROOT);
+const installedSecret=process.env.CINEMA_INSTALLED_SECRET;
+if(installedSecret!==undefined&&(managed||!/^[a-f\d]{64}$/.test(installedSecret)))throw Error('Invalid Cinema installation identity.');
 const local=managed?.appData||process.env.CINEMA_DATA_DIR||path.join(root,'.local');await fsp.mkdir(local,{recursive:true});
 const configFile=path.join(local,'connection.json');
 let configKnown=true;
@@ -84,6 +87,7 @@ const assets=new Map([
   ['/dom.js',['public/dom.js','text/javascript']],['/style.css',['public/style.css','text/css']],
   ['/spotlight.js',['public/spotlight.js','text/javascript']],['/cinema.css',['public/cinema.css','text/css']],
   ['/title.css',['public/title.css','text/css']],['/player.css',['public/player.css','text/css']],
+  ['/player-controls.js',['public/player-controls.js','text/javascript']],['/installed-ui.js',['public/installed-ui.js','text/javascript']],
   ['/watched-coverage.js',['public/watched-coverage.js','text/javascript']],['/watched-dialogue.js',['public/watched-dialogue.js','text/javascript']],
   ['/watched-dialogue.css',['public/watched-dialogue.css','text/css']],['/watched-runtime.js',['public/watched-runtime.js','text/javascript']],
   ['/watched-captions.js',['public/watched-captions.js','text/javascript']],
@@ -285,8 +289,14 @@ const server=http.createServer(async(req,res)=>{
     const u=new URL(req.url,origin),route=u.pathname;
     if(req.method==='POST'&&req.headers['x-cinema-token']!==token)fail('The app restarted. Refresh the connection and try again.',403);
     if(!['GET','POST','HEAD'].includes(req.method))fail('Method not allowed',405);
-    if(route==='/api/session')return json(res,{token,url:config.url,username:config.username,appVersion:'2.25.0',
-      ...(managed?{profile:'scene-preview'}:{})});
+    if(route==='/api/session')return json(res,{token,url:config.url,username:config.username,appVersion:'2.26.0',
+      ...(managed?{profile:'scene-preview'}:installedSecret?{profile:'installed'}:{})});
+    if(route==='/api/installed/ready'&&req.method==='GET'){
+      if(!installedSecret)fail('Unknown route',404);
+      const challenge=u.searchParams.get('challenge');
+      if(!challenge||!/^[a-f\d]{32}$/.test(challenge))fail('Invalid launcher challenge.');
+      return json(res,{proof:installedCinemaProof(installedSecret,challenge)});
+    }
     if(route==='/api/launcher/scene'&&req.method==='GET'){
       if(!managed)fail('Unknown route',404);
       const challenge=u.searchParams.get('challenge');
@@ -295,6 +305,7 @@ const server=http.createServer(async(req,res)=>{
     }
     if(route==='/api/connect'&&req.method==='POST'){
       if(managed)fail('This connection is managed by the Cinema Scene Preview shortcut.',409);
+      if(installedSecret)fail('Cinema Setup configured the bundled qBittorrent connection.',409);
       const b=await body(req);let address;try{address=new URL(b.url);}catch{fail('Enter a valid local Web UI address');}
       const localHttp=address.protocol==='http:'&&['127.0.0.1','localhost','[::1]'].includes(address.hostname);
       if(!(localHttp||client.acceptsSceneOrigin(address.origin))||address.username||address.password)
