@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/abdullahdgrey8/cinema/releases/latest/download/Cinema-Setup-x64.exe"><img src="https://img.shields.io/badge/Download%20for%20Windows-x64-D93656?style=for-the-badge" alt="Download Cinema Setup for Windows x64"></a>
+  <a href="https://github.com/abdullahdgrey8/cinema/releases/latest/download/Cinema-Setup-12-Plugins-x64.exe"><img src="https://img.shields.io/badge/Download%20for%20Windows-x64-D93656?style=for-the-badge" alt="Download Cinema Setup for Windows x64"></a>
 </p>
 
 <p align="center">
@@ -23,11 +23,11 @@
 
 ## Install on Windows
 
-1. [Download Cinema Setup for Windows x64](https://github.com/abdullahdgrey8/cinema/releases/latest/download/Cinema-Setup-x64.exe). Double-click it on a Windows 10 version 1809 or later or a Windows 11 x64 PC, then select **Install**.
+1. [Download Cinema Setup for Windows x64](https://github.com/abdullahdgrey8/cinema/releases/latest/download/Cinema-Setup-12-Plugins-x64.exe). Double-click it on a Windows 10 version 1809 or later or a Windows 11 x64 PC, then select **Install**.
 2. Cinema opens in its own window. For later launches, use **Cinema Player** on your desktop or in the Start menu.
 3. Search for **Big Buck Bunny** to try the bundled **Cinema Open Films** source. Open **… → Source plugins** to see it alongside **Cinema Ubuntu Torrents**, which serves official Ubuntu downloads.
 
-Setup includes Node.js, Python, and the two starter search plugins. During installation it downloads and verifies qBittorrent, FFmpeg, and ffprobe and installs Microsoft's WebView2 Runtime if needed. Cinema starts its own qBittorrent instance with a private profile and sets up the connection automatically. Keep an internet connection available during setup. The installer is unsigned, so Windows may show a publisher prompt.
+Setup includes Node.js, Python, and 12 search plugins, including the two Cinema starter sources. During installation it downloads and verifies qBittorrent, FFmpeg, and ffprobe and installs Microsoft's WebView2 Runtime if needed. Cinema starts its own qBittorrent instance with a private profile and sets up the connection automatically. Keep an internet connection available during setup. The installer is unsigned, so Windows may show a publisher prompt.
 
 Change where new downloads go under **Settings → Download location**. Setup keeps your private profile outside the program folder at `%LOCALAPPDATA%\Cinema\Installed`, and removing the app through **Settings → Apps** leaves that profile and your downloads in place.
 
@@ -122,7 +122,7 @@ The regular desktop setup uses stock qBittorrent. The optional Scene Preview com
 
 ## Browse your plugins
 
-1. The Windows installer includes two starter sources. If you build from source, turn on **View → Search Engine** in qBittorrent and use **Search → Search plugins** to add providers. [qBittorrent plugin setup guide](https://github.com/qbittorrent/search-plugins/wiki/Install-search-plugins)
+1. The Windows installer includes 12 search plugins. If you build from source, turn on **View → Search Engine** in qBittorrent and use **Search → Search plugins** to add providers. [qBittorrent plugin setup guide](https://github.com/qbittorrent/search-plugins/wiki/Install-search-plugins)
 2. In Cinema, open **… → Source plugins**. The list shows every installed plugin and its enabled status. Choose **Refresh plugins** after changes in qBittorrent.
 3. Select **Browse plugin** on an enabled provider. Change **Category** and **Popularity period** to explore suggestions without typing a query.
 4. Open a suggestion’s release details to see the reported seeders, leechers, size and available format information. **Search all releases from this plugin** opens the provider’s returned results for that suggestion.
@@ -145,7 +145,7 @@ Compatible files can play directly. Other formats can use prepared HLS segments.
 
 | Symptom | What to check |
 | --- | --- |
-| Installed Cinema says the downloader is offline | Retry from the startup screen. If a bundled component is missing, run `Cinema-Setup-x64.exe` again. |
+| Installed Cinema says the downloader is offline | Retry from the startup screen. If a bundled component is missing, run `Cinema-Setup-12-Plugins-x64.exe` again. |
 | Source build says qBittorrent is offline | Open qBittorrent, confirm that its Web UI is enabled, and check the exact address and credentials in Cinema. |
 | Sources is empty or a plugin returns no results | Check Python and the plugin’s enabled state in qBittorrent. Try the same title in qBittorrent’s Search tab, then use **Refresh plugins** in Cinema. |
 | A title appears without a playable source | Browse **Watch options** or search for another release. Catalog entries and torrent availability are separate. |
