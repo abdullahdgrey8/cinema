@@ -12,7 +12,7 @@ async function fixture(t) {
   const data = path.join(temporary, 'data');
   const qbit = path.join(root, 'runtime', 'qbit', 'qbittorrent.exe');
   const python = path.join(root, 'runtime', 'python', 'python.exe');
-  const starter = path.join(root, 'runtime', 'plugins', 'starter.py');
+  const starter = path.join(root, 'runtime', 'plugins', 'cinema_open_films.py');
   for (const file of [qbit, python, starter]) {
     await fs.mkdir(path.dirname(file), { recursive: true });
     await fs.writeFile(file, 'starter package fixture');
@@ -47,7 +47,7 @@ async function fixture(t) {
           web_ui_username: 'cinema', bypass_local_auth: false, bypass_auth_subnet_whitelist_enabled: false,
           web_ui_host_header_validation_enabled: true, web_ui_csrf_protection_enabled: true, python_executable_path: python });
       }
-      return Response.json(signals.starterLoaded ? [{ name: 'starter', enabled: true }, ...(
+      return Response.json(signals.starterLoaded ? [{ name: 'cinema_open_films', enabled: true }, ...(
         signals.extraLoaded ? [{name:'extra', enabled:true}] : []
       )] : []);
     },
@@ -70,7 +70,7 @@ test('installed launcher configures the private profile once and preserves plugi
   assert.equal(service.options.env.PORT, '3211');
   const configBase = path.join(f.data, 'qbit-profile', 'qBittorrent');
   const ini = path.join(configBase, 'config', 'qBittorrent.ini');
-  const plugin = path.join(configBase, 'data', 'nova3', 'engines', 'starter.py');
+  const plugin = path.join(configBase, 'data', 'nova3', 'engines', 'cinema_open_films.py');
   assert.match(await fs.readFile(ini, 'utf8'), /StartUpWindowState=Hidden/);
   assert.equal(await fs.readFile(plugin, 'utf8'), 'starter package fixture');
   assert.equal(f.requests.filter(route => route.endsWith('/plugins')).length, 1);
@@ -89,6 +89,7 @@ test('installed launcher configures the private profile once and preserves plugi
 test('an upgraded bundle adds a new plugin to an existing profile once', async t => {
   const f = await fixture(t);
   await f.launch();
+  await fs.unlink(path.join(f.data, 'bundled-plugin-receipts', 'cinema_open_films.py.installed'));
   await f.addBundledPlugin();
   f.signals.extraLoaded = true;
   await f.launch();
