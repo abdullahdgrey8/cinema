@@ -47,10 +47,14 @@ async function fixture(t) {
           web_ui_username: 'cinema', bypass_local_auth: false, bypass_auth_subnet_whitelist_enabled: false,
           web_ui_host_header_validation_enabled: true, web_ui_csrf_protection_enabled: true, python_executable_path: python });
       }
-      return Response.json(signals.starterLoaded ? [{ name: 'starter', enabled: true }] : []);
+      return Response.json(signals.starterLoaded ? [{ name: 'starter', enabled: true }, ...(
+        signals.extraLoaded ? [{name:'extra', enabled:true}] : []
+      )] : []);
     },
   };
-  return { data, qbit, starts, requests, ports, state, signals, launch: () => launchInstalledCinema(root, start, options) };
+  return { data, qbit, starts, requests, ports, state, signals,
+    addBundledPlugin: () => fs.writeFile(path.join(path.dirname(starter), 'extra.py'), 'extra package fixture'),
+    launch: () => launchInstalledCinema(root, start, options) };
 }
 
 test('installed launcher configures the private profile once and preserves plugin changes', async t => {
@@ -80,6 +84,20 @@ test('installed launcher configures the private profile once and preserves plugi
   assert.match(await fs.readFile(ini, 'utf8'), /# user setting/);
   assert.ok((await f.state()).secret === original.secret, 'the installation keeps its original identity');
   await assert.rejects(fs.access(plugin), { code: 'ENOENT' });
+});
+
+test('an upgraded bundle adds a new plugin to an existing profile once', async t => {
+  const f = await fixture(t);
+  await f.launch();
+  await f.addBundledPlugin();
+  f.signals.extraLoaded = true;
+  await f.launch();
+  const extra = path.join(f.data, 'qbit-profile', 'qBittorrent', 'data', 'nova3', 'engines', 'extra.py');
+  assert.equal(await fs.readFile(extra, 'utf8'), 'extra package fixture');
+  assert.equal(f.starts.length, 2);
+  await fs.unlink(extra);
+  await f.launch();
+  await assert.rejects(fs.access(extra), {code:'ENOENT'});
 });
 
 test('first launch waits for the full starter plugin list before starting Cinema', async t => {

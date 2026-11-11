@@ -145,11 +145,11 @@ async function configure(profile, python, plugins, firstRun) {
   const configRoot = await directory(path.join(profileBase, 'config'));
   const ini = path.join(configRoot, 'qBittorrent.ini');
   const previousIni = await item(ini);
-  if (!firstRun && (previousIni?.isFile() || (!previousIni && (await item(path.join(configRoot, 'qBittorrent_new.ini')))?.isFile()))) return [];
-  if (!firstRun || (previousIni && !previousIni.isFile())) {
+  const pendingIni = !previousIni && !firstRun && (await item(path.join(configRoot, 'qBittorrent_new.ini')))?.isFile();
+  if ((!firstRun && !previousIni && !pendingIni) || (previousIni && !previousIni.isFile())) {
     throw Error('Cinema could not verify its qBittorrent profile settings.');
   }
-  if (!previousIni) {
+  if (!previousIni && !pendingIni) {
     const downloads = await directory(path.join(profile.dataRoot, 'downloads'));
     const incomplete = await directory(path.join(profile.dataRoot, 'incomplete'));
     await writeNew(ini, qbitSettings(profile, python, downloads, incomplete));
@@ -160,14 +160,23 @@ async function configure(profile, python, plugins, firstRun) {
   const data = await directory(path.join(profileBase, 'data'));
   const nova = await directory(path.join(data, 'nova3'));
   const engines = await directory(path.join(nova, 'engines'));
+  const receipts = await directory(path.join(profile.dataRoot, 'bundled-plugin-receipts'));
+  const pending = [];
   for (const name of names) {
+    const receipt = path.join(receipts, name + '.installed');
+    if (await item(receipt)) continue;
+    if (!firstRun && ['cinema_open_films.py', 'cinema_ubuntu.py'].includes(name)) {
+      await writeNew(receipt, '1\n');
+      continue;
+    }
     const source = await runtimeFile(path.join(plugins, name));
     const target = path.join(engines, name);
     const existing = await item(target);
     if (!existing) await writeNew(target, await fs.readFile(source));
     else if (!existing.isFile()) throw Error('Cinema could not verify a starter search plugin in its private profile.');
+    pending.push({name: path.basename(name, '.py'), receipt});
   }
-  return names.map(name => path.basename(name, '.py'));
+  return pending;
 }
 
 function listening(port, signal) {
@@ -267,7 +276,7 @@ async function verifyDownloader(request, profile, python, pluginNames, signal) {
   try {
     const response = await request(endpoint('search/plugins'), { ...options, headers });
     const plugins = JSON.parse(await readResponse(response, 256 * 1024));
-    loaded = new Set(plugins.filter(plugin => plugin.enabled).map(plugin => plugin.name));
+    loaded = new Set(plugins.map(plugin => plugin.name));
   } catch {
     throw Error('Cinema could not read the starter search plugins from qBittorrent. Retry to finish setup.');
   }
@@ -316,7 +325,7 @@ export async function launchInstalledCinema(root, start, {
   const marker = path.join(dataRoot, 'starter-plugins.ready');
   const previousSetup = await item(marker);
   if (previousSetup && !previousSetup.isFile()) throw Error('Cinema could not verify its private setup marker.');
-  const pluginNames = await configure(profile, python, path.join(runtime, 'plugins'), !previousSetup);
+  const pendingPlugins = await configure(profile, python, path.join(runtime, 'plugins'), !previousSetup);
   const excluded = /^(?:PORT$|CINEMA_DATA_DIR$|CINEMA_INSTALLED_SECRET$|CINEMA_MANAGED_SCENE_ROOT$|CINEMA_SCENE_|QBT_|QBITTORRENT_CINEMA_)/i;
   const env = Object.fromEntries(Object.entries(environment).filter(([key]) => !excluded.test(key)));
 
@@ -328,7 +337,8 @@ export async function launchInstalledCinema(root, start, {
   if (!await ownsDownloader(profile.webPort, qbit, scoped(startupSignal, 8_000))) {
     throw Error('Cinema could not verify ownership of its qBittorrent connection. Close any conflicting local service and retry.');
   }
-  await verifyDownloader(request, profile, python, pluginNames, scoped(startupSignal, 14_000));
+  await verifyDownloader(request, profile, python, pendingPlugins.map(plugin => plugin.name), scoped(startupSignal, 14_000));
+  for (const plugin of pendingPlugins) await writeNew(plugin.receipt, '1\n');
   if (!previousSetup) await writeNew(marker, '1\n');
 
   if (await cinemaReady()) return;

@@ -9,9 +9,6 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 $buildRoot = Join-Path $root '.local\installer'
 $cache = Join-Path $env:LOCALAPPDATA 'Cinema\InstallerBuild'
-if ($Online -and $SearchPluginDirectory) {
-    throw 'The online installer includes only the starter search engines.'
-}
 if ($SearchPluginDirectory -and -not $OutputDirectory) {
     throw 'A curated search plugin build needs its own explicit -OutputDirectory.'
 }

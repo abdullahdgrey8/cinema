@@ -27,6 +27,8 @@
 2. Cinema opens in its own window. For later launches, use **Cinema Player** on your desktop or in the Start menu.
 3. Search for **Big Buck Bunny** to try the bundled **Cinema Open Films** source. Open **… → Source plugins** to see it alongside **Cinema Ubuntu Torrents**, which serves official Ubuntu downloads.
 
+If you previously installed the two-plugin build, close Cinema and quit its qBittorrent from the Windows notification area before running Setup again. Open **Cinema Player** to add the extra bundled plugins to your existing profile.
+
 Setup includes Node.js, Python, and 12 search plugins, including the two Cinema starter sources. During installation it downloads and verifies qBittorrent, FFmpeg, and ffprobe and installs Microsoft's WebView2 Runtime if needed. Cinema starts its own qBittorrent instance with a private profile and sets up the connection automatically. Keep an internet connection available during setup. The installer is unsigned, so Windows may show a publisher prompt.
 
 Change where new downloads go under **Settings → Download location**. Setup keeps your private profile outside the program folder at `%LOCALAPPDATA%\Cinema\Installed`, and removing the app through **Settings → Apps** leaves that profile and your downloads in place.
